@@ -7,3 +7,5 @@ dict2=dict['esearchresult']
 print(dict2['webenv'])
 print(dict2['querykey'])
 #print(dict2['idlist'])
+
+
