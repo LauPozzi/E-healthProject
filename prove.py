@@ -14,11 +14,17 @@ print(dict2['querykey'])
 
 #FETCH API
 link2 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key={}&WebEnv={}&retmode=xml".format(dict2['querykey'],dict2['webenv'])
+print(link2)
 
-#Ho commentato il codice perchè non credo funzioni, ma almeno faccio una commit
-#f2 = requests.get(link2)
-#f2_xml= f2.text
-#dict3 = xmltodict.parse(f2_xml)
+#
+f2 = requests.get(link2)
+f2_xml = f2.text
+dict3 = xmltodict.parse(f2_xml)
+ArticleSet = dict3['PubmedArticleSet']
 
-#print(dict3)
+#Extract title of first article
+print(ArticleSet['PubmedArticle'][0]['MedlineCitation']['Article']['ArticleTitle'])
+
+
+
 
