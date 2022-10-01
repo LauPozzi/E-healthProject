@@ -11,5 +11,6 @@ def main():
     articles_dict = query_param(string)
     print(articles_dict['PubmedArticle'][0]['MedlineCitation']['Article']['ArticleTitle'])
 
+
 if __name__ == '__main__':
     main()
