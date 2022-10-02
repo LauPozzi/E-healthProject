@@ -36,6 +36,7 @@ def extract_authors(authors):
 
     return authors_out
 
+
 def dict_2_dataframe(article_set: dict):
     dataframe = pd.DataFrame
     column_names = ['Article Title', 'Date', 'Authors', 'Journal', 'Study Type', 'Keywords', 'DOI', 'Abstract']
@@ -73,25 +74,29 @@ def dict_2_dataframe(article_set: dict):
 
     # TODO: study type not in xml... Get from abstract?
 
-    keywords = list(map(lambda d: d.get('MedlineCitation').get('KeywordList', {'Keyword': [{'#text': 'n.a.'}]}).get('Keyword'), article_list))
+    keywords = list(
+        map(lambda d: d.get('MedlineCitation').get('KeywordList', {'Keyword': [{'#text': 'n.a.'}]}).get('Keyword'),
+            article_list))
     for i, keyword in enumerate(keywords):
         keywords[i] = list(map(lambda k: k.get('#text'), keyword))
 
-
-    # TODO: there are dois that are values and dois that are lists
     DOI_std = "https://doi.org/"
-    dois = list(map(lambda d: d.get('MedlineCitation').get('Article').get('ELocationID'), article_list)) #.get('#text')
-    # dois = [DOI_std + doi for doi in dois]
+    dois = list(map(lambda d: list(
+        filter(lambda k: k['@IdType'] == 'doi', d.get('PubmedData').get('ArticleIdList').get('ArticleId'))),
+                    article_list))
+    dois = list(map(lambda d: d[0], dois))  # To obtain the list of dictionaries
+    dois = list(map(lambda d: DOI_std + d.get('#text'), dois))
 
     # TODO: there are abstracts that are values some are lists and some are dictionaries
-    abstracts = list(map(lambda d: d.get('MedlineCitation').get('Article').get('Abstract').get('AbstractText'), article_list))
+    abstracts = list(
+        map(lambda d: d.get('MedlineCitation').get('Article').get('Abstract').get('AbstractText'), article_list))
 
     data.append(titles)
     data.append(dates)
     data.append(authors)
     data.append(journals)
     data.append(keywords)
-    # data.append(dois)
+    data.append(dois)
     data.append(abstracts)
 
     return data
@@ -146,7 +151,8 @@ if __name__ == '__main__':
 
     data = dict_2_dataframe(ArticleSet)
     for i in range(len(data[0])):
-        print(data[0][i], '\n', data[4][i], end='\n\n')
+        print(data[0][i], '\n', data[5][i], end='\n\n')
+    print(data[5])
     # print(data[0])
     # print(data[1])
     # print(data[2])
