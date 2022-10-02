@@ -20,5 +20,8 @@ def main():
     # TODO: call to dict2dataframe.dict_2_dataframe()
     db=dict_2_dataframe(articles_dict) #function from dict2dataframe_Laura
     print(db)
+    
+    # TODO: create csv
+    #db.to_csv (r'C:\Users\pozzi\Documents\BIOMEDICA\E-HEALTH\E-healthProject\export_dataframe.csv', index = None)
 if __name__ == '__main__':
     main()
