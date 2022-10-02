@@ -10,7 +10,7 @@ def main():
     # returns dict with all articles information
     articles_dict = query_param(string)
 
-    #save dict as json to see the structure
+    #save dict as json to see the structure . Once open data.json ctrl+alt+L too see structure
     with open('data.json', 'w') as f:
         json.dump(articles_dict, f)
 
