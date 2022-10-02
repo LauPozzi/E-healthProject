@@ -40,8 +40,17 @@ def extract_journal_names(article_list):
     return list(map(lambda d: d.get('MedlineCitation').get('Article').get('Journal').get('Title'), article_list))
 
 def extract_studytypes(article_list):
-   return list(map(lambda d: d.get('MedlineCitation').get('Article').get('PublicationTypeList').get('PublicationType').get('#text'), article_list))
+    study_types_out = []
+    study_types = list(map(lambda d: d.get('MedlineCitation').get('Article').get('PublicationTypeList').get('PublicationType'),article_list))
+    for type in study_types:
+        if isinstance(type, list):
+            study_types_out.append(list(map(lambda d: d.get('#text', 'n.a.'), type)))
+        elif isinstance(type, collections.abc.Mapping):
+            study_types_out.append([type.get('#text', 'n.a.')])
+        else:
+            study_types_out.append(['n.a.'])
 
+    return study_types_out
 def extract_keywords(article_list):
     keywords_dicts = list(
         map(lambda d: d.get('MedlineCitation').get('KeywordList', {'Keyword': [{'#text': 'n.a.'}]}).get('Keyword'),
@@ -89,7 +98,7 @@ def dict_2_dataframe(article_set: dict):
                  'Date': extract_dates(article_list),
                  'Authors': extract_authors(article_list),
                  'Journal': extract_journal_names(article_list),
-                # 'Study Type': extract_studytypes(article_list),   #da rivedere
+                 'Study Type': extract_studytypes(article_list),   
                  'Keywords': extract_keywords(article_list),
                  'DOI': extract_dois(article_list),
                  'Abstract': extract_abstracts(article_list)
@@ -135,4 +144,4 @@ if __name__ == '__main__':
     # TODO: study type not in xml... Get from abstract?
     database = dict_2_dataframe(ArticleSet)
 
-    print(database)
+    print(database['Study Type'])
