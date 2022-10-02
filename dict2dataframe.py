@@ -1,3 +1,4 @@
+import collections.abc
 import datetime
 import time
 import functools
@@ -21,6 +22,19 @@ import xmltodict
 # list(b)
 # foo2(a)
 
+
+def extract_authors(authors):
+    authors_out = []
+    for author in authors:
+        authors_out.append([])
+        if isinstance(author, list):
+            authors_out[-1] = list(map(lambda d: d.get('LastName', 'n.a.') + ' ' + d.get('ForeName', 'n.a.'), author))
+        elif isinstance(author, collections.abc.Mapping):
+            authors_out[-1] = [author.get('LastName', 'n.a.') + ' ' + author.get('ForeName', 'n.a.')]
+        else:
+            authors_out[-1] = ['n.a.']
+
+    return authors_out
 
 def dict_2_dataframe(article_set: dict):
     dataframe = pd.DataFrame
@@ -54,6 +68,8 @@ def dict_2_dataframe(article_set: dict):
     authors = list(
         map(lambda d: d.get('MedlineCitation').get('Article').get('AuthorList', {'Author': []}).get('Author'),
             article_list))
+
+    authors = extract_authors(authors)
 
     journals = list(map(lambda d: d.get('MedlineCitation').get('Article').get('Journal').get('Title'), article_list))
 
@@ -129,9 +145,12 @@ if __name__ == '__main__':
     # dict_2_dataframe2(ArticleSet)
 
     data = dict_2_dataframe(ArticleSet)
-    print(data[0])
-    print(data[1])
-    print(data[3])
+    for i in range(len(data[0])):
+        print(data[0][i], '\n', data[2][i], end='\n\n')
+    # print(data[0])
+    # print(data[1])
+    # print(data[2])
+    # print(data[3])
     # print(data[5])
 
     # Extract title of first article
