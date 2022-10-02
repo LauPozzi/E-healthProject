@@ -64,19 +64,19 @@ def dict_2_dataframe(article_set: dict):
 
     dates = [datetime.datetime(y, m, d) for y, m, d in zip(years, months, days)]
 
-    # TODO: authors is a list of dictionaries still -> I want a list of lists
     authors = list(
         map(lambda d: d.get('MedlineCitation').get('Article').get('AuthorList', {'Author': []}).get('Author'),
             article_list))
-
     authors = extract_authors(authors)
 
     journals = list(map(lambda d: d.get('MedlineCitation').get('Article').get('Journal').get('Title'), article_list))
 
     # TODO: study type not in xml... Get from abstract?
 
-    # TODO: keywords is a list of dictionaries still -> I want a list of lists
-    keywords = list(map(lambda d: d.get('MedlineCitation').get('KeywordList'), article_list))
+    keywords = list(map(lambda d: d.get('MedlineCitation').get('KeywordList', {'Keyword': [{'#text': 'n.a.'}]}).get('Keyword'), article_list))
+    for i, keyword in enumerate(keywords):
+        keywords[i] = list(map(lambda k: k.get('#text'), keyword))
+
 
     # TODO: there are dois that are values and dois that are lists
     DOI_std = "https://doi.org/"
@@ -146,7 +146,7 @@ if __name__ == '__main__':
 
     data = dict_2_dataframe(ArticleSet)
     for i in range(len(data[0])):
-        print(data[0][i], '\n', data[2][i], end='\n\n')
+        print(data[0][i], '\n', data[4][i], end='\n\n')
     # print(data[0])
     # print(data[1])
     # print(data[2])
