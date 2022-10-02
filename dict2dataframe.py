@@ -1,8 +1,10 @@
 import collections.abc
 import datetime
+import sys
 import time
 import functools
 import operator
+import traceback
 
 import pandas as pd
 import requests
@@ -37,9 +39,22 @@ def extract_authors(authors):
     return authors_out
 
 
+def extract_abstracts(abstracts):
+    abstracts_out = []
+    for abstract in abstracts:
+        if isinstance(abstract, str):
+            abstracts_out.append(abstract)
+        elif isinstance(abstract, list):
+            abstracts_out.append(' '.join(list(map(lambda d: d.get('#text'), abstract))))
+        else:
+            abstracts_out.append('n.a.')
+
+    return abstracts_out
+
+
 def dict_2_dataframe(article_set: dict):
     dataframe = pd.DataFrame
-    column_names = ['Article Title', 'Date', 'Authors', 'Journal', 'Study Type', 'Keywords', 'DOI', 'Abstract']
+    column_names = ['Article Title', 'Date', 'Authors', 'Journal', 'Keywords', 'DOI', 'Abstract']
     data = []
 
     article_list = article_set['PubmedArticle']
@@ -87,9 +102,9 @@ def dict_2_dataframe(article_set: dict):
     dois = list(map(lambda d: d[0], dois))  # To obtain the list of dictionaries
     dois = list(map(lambda d: DOI_std + d.get('#text'), dois))
 
-    # TODO: there are abstracts that are values some are lists and some are dictionaries
     abstracts = list(
         map(lambda d: d.get('MedlineCitation').get('Article').get('Abstract').get('AbstractText'), article_list))
+    abstracts = extract_abstracts(abstracts)
 
     data.append(titles)
     data.append(dates)
@@ -98,6 +113,20 @@ def dict_2_dataframe(article_set: dict):
     data.append(keywords)
     data.append(dois)
     data.append(abstracts)
+
+    try:
+        for datum in data:
+            assert len(datum) == len(data[0])
+    except AssertionError:
+        _, _, tb = sys.exc_info()
+        traceback.print_tb(tb)  # Fixed format
+        tb_info = traceback.extract_tb(tb)
+        filename, line, func, text = tb_info[-1]
+
+        print(
+            'An error occurred on line {} in statement {}.\nThe data extracted are not of the same length'.format(line,
+                                                                                                                  text))
+        exit(1)
 
     return data
 
@@ -151,13 +180,7 @@ if __name__ == '__main__':
 
     data = dict_2_dataframe(ArticleSet)
     for i in range(len(data[0])):
-        print(data[0][i], '\n', data[5][i], end='\n\n')
-    print(data[5])
-    # print(data[0])
-    # print(data[1])
-    # print(data[2])
-    # print(data[3])
-    # print(data[5])
+        print(data[0][i], '\n', data[6][i], '\n', data[5][i], end='\n\n')
 
     # Extract title of first article
     # print(ArticleSet['PubmedArticle'][0]['MedlineCitation']['Article']['ArticleTitle'])
