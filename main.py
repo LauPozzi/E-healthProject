@@ -1,6 +1,7 @@
 from easygui import enterbox
 from query_parameters import query_param
 import json
+from dict2dataframe_Laura import *
 
 
 def main():
@@ -17,7 +18,7 @@ def main():
     print(articles_dict['PubmedArticle'][0]['MedlineCitation']['Article']['ArticleTitle'])
 
     # TODO: call to dict2dataframe.dict_2_dataframe()
-
-
+    db=dict_2_dataframe(articles_dict) #function from dict2dataframe_Laura
+    print(db)
 if __name__ == '__main__':
     main()
