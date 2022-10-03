@@ -1,5 +1,7 @@
 import collections.abc
 import datetime
+import time
+
 import pandas as pd
 import requests
 import xmltodict
@@ -75,38 +77,38 @@ def extract_keywords(article_list):
     return keywords
 
 
-def doi_utility(k):
+def doi_type_utility(k):
     try:
         return k['@IdType'] == 'doi'
     except:
         return k[0]
 
 
-def doi_utility2(d):
+def doi_text_utility(d):
     try:
         return d[0]
     except IndexError:
         return {'#text': ''.join(d)}
 
 
-def doi_utility3(d):
+def doi_concat_utility(d):
     DOI_std = "https://doi.org/"
     try:
         return DOI_std + d.get('#text')
-    except AttributeError:  # AttributeError
+    except AttributeError:
         return DOI_std + d
 
 
 def extract_dois(article_list):
     dois = list(map(lambda d: list(
-        filter(lambda k: doi_utility(k), d.get('PubmedData').get('ArticleIdList').get('ArticleId'))),
+        filter(lambda k: doi_type_utility(k), d.get('PubmedData').get('ArticleIdList').get('ArticleId'))),
                     article_list))
-    dois = list(map(lambda d: doi_utility2(d), dois))  # To obtain the list of dictionaries
-    dois = list(map(lambda d: doi_utility3(d), dois))
+    dois = list(map(lambda d: doi_text_utility(d), dois))  # To obtain the list of dictionaries
+    dois = list(map(lambda d: doi_concat_utility(d), dois))
     return dois
 
 
-def abstract_utility(d):
+def abstract_concat_utility(d):
     try:
         return d.get('#text')
     except AttributeError:
@@ -122,9 +124,11 @@ def extract_abstracts(article_list):
     for abstract in abstracts:
         if isinstance(abstract, str):
             abstracts_out.append(abstract)
+        elif isinstance(abstract, collections.abc.Mapping):
+            abstracts_out.append(abstract.get('#text'))
         elif isinstance(abstract, list):
             try:
-                abstracts_out.append(' '.join(list(map(lambda d: abstract_utility(d), abstract))))
+                abstracts_out.append(' '.join(list(map(lambda d: abstract_concat_utility(d), abstract))))
             except TypeError:
                 abstracts_out.append('n.a.')
         else:
@@ -156,8 +160,14 @@ def dict_2_dataframe(article_set: dict):
 
 
 if __name__ == '__main__':
-    link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=serious+game&retmode=json" \
-            "&RetMax=100&WebEnv=%3Cwebenv%20string%3E&usehistory=y "
+    search_entry = 'serious game'
+    search_entry = search_entry.split(' ')
+    search_entry = '+'.join(search_entry)
+    print(search_entry)
+
+    link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term={}&retmode=json" \
+            "&RetMax=100&WebEnv=%3Cwebenv%20string%3E&usehistory=y ".format(search_entry)
+    print(link1)
     f1 = requests.get(link1)
     dict1 = f1.json()
     dict2 = dict1['esearchresult']
@@ -167,12 +177,18 @@ if __name__ == '__main__':
     link2 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key={}&WebEnv={}&retmode=xml".format(
         dict2['querykey'], dict2['webenv'])
 
-    #
+    # TODO: manage this exception somewhere
+    assert int(dict2['count']) > 0
+
     f2 = requests.get(link2)
     f2_xml = f2.text
     dict3 = xmltodict.parse(f2_xml)
     ArticleSet = dict3['PubmedArticleSet']
 
+    start = time.time()
     database = dict_2_dataframe(ArticleSet)
+    end = time.time()
 
     print(database.head())
+
+    print("\nProcessed {} results in {:.4f} seconds".format(database.shape[0], end-start))
