@@ -12,8 +12,8 @@ def main():
     articles_dict = query_param(string)
 
     # save dict as json to see the structure . Once open data.json ctrl+alt+L too see structure
-    with open('data.json', 'w') as f:
-        json.dump(articles_dict, f)
+    # with open('data.json', 'w') as f:
+    #    json.dump(articles_dict, f)
 
     print(articles_dict['PubmedArticle'][0]['MedlineCitation']['Article']['ArticleTitle'])
 
@@ -22,6 +22,6 @@ def main():
     print(db)
 
     # TODO: create csv
-    #db.to_csv (r'C:\Users\pozzi\Documents\BIOMEDICA\E-HEALTH\E-healthProject\export_dataframe.csv', index = None)
+    db.to_csv('export_dataframe.csv', sep='$', index=None)
 if __name__ == '__main__':
     main()
