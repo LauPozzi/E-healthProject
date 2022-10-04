@@ -184,10 +184,13 @@ if __name__ == '__main__':
     total_results = int(dict2['count'])
     chunks = math.ceil(total_results/RETMAX)
 
-    database = pd.DataFrame()
+    #database = pd.DataFrame()
+
+    appended_database = []
 
     for i in range(chunks):
         # FETCH API
+        #TODO : understand why it fetches the same chunk of articles (even though this is a loop for)
         link2 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key={}&WebEnv={}&retsart={}&retmax={}&retmode=xml".format(
             dict2['querykey'], dict2['webenv'], i*RETMAX, RETMAX)
 
@@ -210,7 +213,14 @@ if __name__ == '__main__':
         time5 = time.time()
 
         time_conv = time.time()
-        database = pd.concat([database, dict_2_dataframe(ArticleSet)], ignore_index=True)
+
+        #database = pd.concat([database, dict_2_dataframe(ArticleSet)], ignore_index=True)
+        data = dict_2_dataframe(ArticleSet)
+
+        #print(data) #fetch resistuisce sempre gli stessi primi 100 articoli
+        appended_database.append(data)
+
+    appended_database = pd.concat(appended_database, ignore_index=True)
 
     end_conv = time.time()
 
