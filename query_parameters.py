@@ -5,7 +5,7 @@ import xmltodict
 def query_param(query):
     newString = query.replace(" ", "+")
     # First search given the initial string
-    link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term={}&retmode=json&RetMax=100&WebEnv=%3Cwebenv%20string%3E&usehistory=y".format(
+    link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term={}&retmode=json&RetMax=100&usehistory=y".format(
         newString)
     f1 = requests.get(link1)
     dict = f1.json()
