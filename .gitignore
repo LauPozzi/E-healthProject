@@ -2,3 +2,5 @@
 prove_sceme/
 venv/
 proveLaura/
+__pycache__/
+*.csv
