@@ -1,5 +1,6 @@
 import collections.abc
 import datetime
+import math
 import time
 
 import pandas as pd
@@ -9,6 +10,8 @@ import xmltodict
 
 # TODO: set the default values, if it's not the last get() a dictionary should be provided to avoid errors (as in
 #  the years-months-days extractions)
+
+RETMAX = 100
 
 def extract_titles(article_list):
     return list(map(lambda d: d.get('MedlineCitation').get('Article').get('ArticleTitle', "n.a."), article_list))
@@ -80,7 +83,7 @@ def extract_keywords(article_list):
 def doi_type_utility(k):
     try:
         return k['@IdType'] == 'doi'
-    except:
+    except TypeError:
         return k[0]
 
 
@@ -160,35 +163,57 @@ def dict_2_dataframe(article_set: dict):
 
 
 if __name__ == '__main__':
+    time1 = time.time()
     search_entry = 'serious game'
     search_entry = search_entry.split(' ')
     search_entry = '+'.join(search_entry)
     print(search_entry)
 
     link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term={}&retmode=json" \
-            "&RetMax=100&WebEnv=%3Cwebenv%20string%3E&usehistory=y ".format(search_entry)
-    print(link1)
+            "&RetMax=1&WebEnv=%3Cwebenv%20string%3E&usehistory=y ".format(search_entry)
+
     f1 = requests.get(link1)
+
+    time2 = time.time()
+
+    print("Search in {:.4f} seconds".format(time2-time1))
+
     dict1 = f1.json()
     dict2 = dict1['esearchresult']
-    # If we want to use the fetch API we need webenv and querykey
 
-    # FETCH API
-    link2 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key={}&WebEnv={}&retmode=xml".format(
-        dict2['querykey'], dict2['webenv'])
+    total_results = int(dict2['count'])
+    chunks = math.ceil(total_results/RETMAX)
 
-    # TODO: manage this exception somewhere
-    assert int(dict2['count']) > 0
+    database = pd.DataFrame()
 
-    f2 = requests.get(link2)
-    f2_xml = f2.text
-    dict3 = xmltodict.parse(f2_xml)
-    ArticleSet = dict3['PubmedArticleSet']
+    for i in range(chunks):
+        # FETCH API
+        link2 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key={}&WebEnv={}&retsart={}&retmax={}&retmode=xml".format(
+            dict2['querykey'], dict2['webenv'], i*RETMAX, RETMAX)
 
-    start = time.time()
-    database = dict_2_dataframe(ArticleSet)
-    end = time.time()
 
-    print(database.head())
+        # TODO: manage this exception somewhere
+        assert int(dict2['count']) > 0
 
-    print("\nProcessed {} results in {:.4f} seconds".format(database.shape[0], end-start))
+        time3 = time.time()
+
+        f2 = requests.get(link2)
+
+        time4 = time.time()
+
+        #print("Fetch in {:.4f} seconds".format(time4 - time3))
+
+        f2_xml = f2.text
+        dict3 = xmltodict.parse(f2_xml)
+        ArticleSet = dict3['PubmedArticleSet']
+
+        time5 = time.time()
+
+        time_conv = time.time()
+        database = pd.concat([database, dict_2_dataframe(ArticleSet)], ignore_index=True)
+
+    end_conv = time.time()
+
+    print("\nProcessed {} results in {:.4f} seconds.".format(database.shape[0], end_conv-time1))
+
+
