@@ -1,6 +1,6 @@
 import requests
 import xmltodict
-
+from easygui import msgbox
 
 def query_param(query):
     newString = query.replace(" ", "+")
@@ -15,6 +15,9 @@ def query_param(query):
     f2 = requests.get(link2)
     f2_xml = f2.text
     dict2 = xmltodict.parse(f2_xml)
+    if dict2['eFetchResult']['ERROR'] == 'Empty result - nothing to do':
+        msgbox('Empty result - nothing to do', 'Search Result', 'OK')
+        exit()
     ArticleSet = dict2['PubmedArticleSet']
 
     return ArticleSet  # dict

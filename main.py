@@ -1,13 +1,14 @@
-from easygui import enterbox
+from easygui import enterbox, msgbox
 from query_parameters import query_param
 import json
 from dict2dataframe import *
 
-
 def main():
     # user enters string
     string = enterbox("Please, enter a string for the research.", "Database Preparation")
-
+    if not string:
+        msgbox('No string inserted', 'Message', 'OK')
+        exit()
     # returns dict with all articles information
     articles_dict = query_param(string)
 
@@ -23,5 +24,7 @@ def main():
 
     # TODO: create csv
     db.to_csv('export_dataframe.csv', sep='$', index=None)
+
+
 if __name__ == '__main__':
     main()
