@@ -2,7 +2,7 @@ import requests
 import re  # libreria regular expression
 import time
 
-link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key=1&WebEnv=MCID_633c4d9429c1697d164e8f0b&rettype=medline"
+link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key=1&WebEnv=MCID_633c6fbd40b53163211757ec&rettype=medline"
 start = time.time()
 f1 = requests.get(link1)
 request_time = time.time()-start
@@ -18,14 +18,29 @@ articles = text.split("\n\n")  # separo i singoli articoli che sono divisi da un
 #    un trattino (-)
 #    zero o più spazi (\s)* (\s spazio, * zero o più)
 #
-start = time.time()
 # concateno una riga vuota davanti all'articolo in modo tale che anche il primo header venga preso
 reg=re.compile(r"\n([A-Z]+)\s*-\s*")
-article_divided = reg.split("\n" + articles[0])
+
+# PROVE CON I DIVERSI METODI PER CAPIRE QUELLO PIU' VELOCE. FANNO TUTTE LA STESSA COSA
+start = time.time()
+articles_divided = list()
+for article in articles:
+    articles_divided.append(reg.split("\n" + article))
 regexpress_time = time.time()-start
 print(regexpress_time)
 
-article_divided = article_divided[1:]  # considero dal primo elemento in poi perchè primo è vuoto
-# creo lista tuple: header(elementi pari), descrizione(elementi dispari)
-article = list(zip(article_divided[::2], article_divided[1::2]))
-article
+start = time.time()
+articles_divided = [reg.split("\n" + article) for article in articles]
+regexpress_time = time.time()-start
+print(regexpress_time)
+
+start = time.time()
+articles_divided = list(map(lambda article: reg.split("\n" + article), articles))
+regexpress_time = time.time()-start
+print(regexpress_time)
+
+# TODO: DA LAVORARE SU TUTTI GLI ARTICOLI E NON SOLO UNO
+# article_divided = article_divided[1:]  # considero dal primo elemento in poi perchè primo è vuoto
+# # creo lista tuple: header(elementi pari), descrizione(elementi dispari)
+# article = list(zip(article_divided[::2], article_divided[1::2]))
+
