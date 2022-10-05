@@ -59,6 +59,11 @@ for article in articles_tuple:
     articles_filterd.append([t for t in article if t[0] in wanted_field]) # t[0] first element of tuple
 articles_filterd
 
+## TODO: function that adjust tuples: a) if more than one equal header : concatenate b) if contain \n, delete "\n   " (like in abstract)
+
+## TODO: functions for each header, like in dict2dataframe: creation of lists containing each a header from all the articles
+
+## TODO: dict creatin as in dict2dataframe
 
 
 
