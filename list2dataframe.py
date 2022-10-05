@@ -112,24 +112,7 @@ def abstract_concat_utility(d):
 
 
 def extract_abstracts(article_list):
-    abstracts_out = []
-    abstracts = list(
-        map(lambda d: d.get('MedlineCitation').get('Article').get('Abstract', {'AbstractText': 'n.a.'}).get(
-            'AbstractText'), article_list))
-    for abstract in abstracts:
-        if isinstance(abstract, str):
-            abstracts_out.append(abstract)
-        elif isinstance(abstract, collections.abc.Mapping):
-            abstracts_out.append(abstract.get('#text'))
-        elif isinstance(abstract, list):
-            try:
-                abstracts_out.append(' '.join(list(map(lambda d: abstract_concat_utility(d), abstract))))
-            except TypeError:
-                abstracts_out.append('n.a.')
-        else:
-            abstracts_out.append('n.a.')
-
-    return abstracts_out
+    return list(map(lambda d: next(item for item in list(map(lambda x: x[1] if (x[0] == 'AB') else None, d)) if item is not None), article_list))
 
 
 def list_2_dataframe(article_list: list):
@@ -142,13 +125,13 @@ def list_2_dataframe(article_list: list):
     """
 
     data_dict = {'Article Title': extract_titles(article_list),
-                  'Date': extract_dates(article_list)
+                  'Date': extract_dates(article_list),
                  # 'Authors': extract_authors(article_list),
                  # 'Journal': extract_journal_names(article_list),
                  # 'Study Type': extract_studytypes(article_list),
                  # 'Keywords': extract_keywords(article_list),
                  # 'DOI': extract_dois(article_list),
-                 # 'Abstract': extract_abstracts(article_list)
+                  'Abstract': extract_abstracts(article_list)
                  }
     return pd.DataFrame(data_dict)
 
