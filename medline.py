@@ -44,13 +44,22 @@ print(regexpress_time)
 
 # articles divided is now a list of list
 # proceeding with one of the method: for now, FOR LOOP
-article_new = list()
+articles_tuple = list()
 for article in articles_divided:
     article = article[1:]  # considero dal primo elemento in poi perchè primo è vuoto
     # creo lista tuple: header(elementi pari), descrizione(elementi dispari)
-    article_new.append(list(zip(article[::2], article[1::2])))
+    articles_tuple.append(list(zip(article[::2], article[1::2])))
 
-#dictionary creation, for single article, with extraction of the important information
-def extract_dict()
+# dictionary creation, for single article, with extraction of the important information
+# since there could be more than 1 equal header, dict can't be directly created, since the key of dict must be unique
+
+wanted_field = ['TI', 'AB', 'AID', 'AU', 'JT', 'DP', 'OT', 'PT']
+articles_filterd = list()
+for article in articles_tuple:
+    articles_filterd.append([t for t in article if t[0] in wanted_field]) # t[0] first element of tuple
+articles_filterd
+
+
+
 
 
