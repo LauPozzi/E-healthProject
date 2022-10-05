@@ -2,12 +2,12 @@ import requests
 import re  # libreria regular expression
 import time
 
-link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key=1&WebEnv=MCID_633c6fbd40b53163211757ec&rettype=medline"
+link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key=1&WebEnv=MCID_633d2ff062bb053a6d0921f9&rettype=medline"
 start = time.time()
-f1 = requests.get(link1)
+webpage = requests.get(link1)
 request_time = time.time()-start
 print(request_time)
-text = f1.text.strip()  # toglie spazio sopra e sotto
+text = webpage.text.strip()  # toglie spazio sopra e sotto
 articles = text.split("\n\n")  # separo i singoli articoli che sono divisi da una riga vuota
 
 # devo separare ogni riga: con regular expression individuo la stringa che separa
@@ -20,7 +20,8 @@ articles = text.split("\n\n")  # separo i singoli articoli che sono divisi da un
 #
 reg=re.compile(r"\n([A-Z]+)\s*-\s*")
 
-# PROVE CON I DIVERSI METODI PER CAPIRE QUELLO PIU' VELOCE. FANNO TUTTE LA STESSA COSA
+# PROVE CON I DIVERSI METODI PER CAPIRE QUELLO PIU' VELOCE. FANNO TUTTE LA STESSA COSA.
+# bisogna seglierne uno
 start = time.time()
 articles_divided = list()
 for article in articles:
@@ -41,8 +42,15 @@ articles_divided = list(map(lambda article: reg.split("\n" + article), articles)
 regexpress_time = time.time()-start
 print(regexpress_time)
 
-# TODO: DA LAVORARE SU TUTTI GLI ARTICOLI E NON SOLO UNO
-# article_divided = article_divided[1:]  # considero dal primo elemento in poi perchè primo è vuoto
-# # creo lista tuple: header(elementi pari), descrizione(elementi dispari)
-# article = list(zip(article_divided[::2], article_divided[1::2]))
+# articles divided is now a list of list
+# proceeding with one of the method: for now, FOR LOOP
+article_new = list()
+for article in articles_divided:
+    article = article[1:]  # considero dal primo elemento in poi perchè primo è vuoto
+    # creo lista tuple: header(elementi pari), descrizione(elementi dispari)
+    article_new.append(list(zip(article[::2], article[1::2])))
+
+#dictionary creation, for single article, with extraction of the important information
+def extract_dict()
+
 
