@@ -2,6 +2,7 @@ import requests
 import re  # libreria regular expression
 import time
 
+# TODO: creation of function that does all the following: input = text , output = articles_tuple
 link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key=1&WebEnv=MCID_633d2ff062bb053a6d0921f9&rettype=medline"
 start = time.time()
 webpage = requests.get(link1)
@@ -53,11 +54,11 @@ for article in articles_divided:
 # dictionary creation, for single article, with extraction of the important information
 # since there could be more than 1 equal header, dict can't be directly created, since the key of dict must be unique
 
+## TODO: creation of a function that does the following
 wanted_field = ['TI', 'AB', 'AID', 'AU', 'JT', 'DP', 'OT', 'PT']
 articles_filterd = list()
 for article in articles_tuple:
     articles_filterd.append([t for t in article if t[0] in wanted_field]) # t[0] first element of tuple
-articles_filterd
 
 ## TODO: function that adjust tuples: a) if more than one equal header : concatenate b) if contain \n, delete "\n   " (like in abstract)
 
