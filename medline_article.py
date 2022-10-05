@@ -30,38 +30,26 @@ def header_selection(list_tuple):
     article_filterd = [t for t in list_tuple if t[0] in wanted_field]
     return article_filterd
 
-def tuple_manag(list_tuple):
+def tuple_manag(list_tuple) -> dict:
     # To handle the problem of equals header and \n in the strings
     list_tuple_nospace = [tuple(map(lambda i: str.replace(i, "\n      ", " "), tup)) for tup in list_tuple]
-
-    # I tried 2 methods to handle double header but they do not work
-
-    # list_tuple_nodouble = []
-    # i = {}
-    # for k,s in list_tuple_nospace:
-    #     if k not in i:
-    #         list_tuple_nodouble.append((k, s))
-    #         i[k] = len(i)
-    #     else:
-    #         list_tuple_nodouble[i[k]][1].extend(s)
 
     # provare con c[a].append e non extend
     c = collections.defaultdict(list)
     for a,b in list_tuple_nospace:
         c[a].append(b)
-    list_tuple_nodouble = list (c.items())
-
-    return list_tuple_nodouble
+    dict_nodouble = dict(c.items())
+    return dict_nodouble
 
 
 if __name__ == '__main__':
     link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key=1&WebEnv=MCID_633da339bb0361170641f64b&rettype=medline"
     webpage = requests.get(link1)
     articles = text_edit(webpage)
-    # Trying with just the firt article
+    # Trying with just the first article
     article_tuple = article_division(articles[0])
     article_small = header_selection(article_tuple)
-    article_final = tuple_manag(article_small)
+    article_dict = tuple_manag(article_small)
     print(article_final)
 #
 #
