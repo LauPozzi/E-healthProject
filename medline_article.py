@@ -45,6 +45,7 @@ def tuple_manag(list_tuple):
     #     else:
     #         list_tuple_nodouble[i[k]][1].extend(s)
 
+    # provare con c[a].append e non extend
     # c = collections.defaultdict(list)
     # for a,b in list_tuple_nospace:
     #     c[a].extend(b)
