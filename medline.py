@@ -11,30 +11,32 @@ text = f1.text.strip()  # toglie spazio sopra e sotto
 articles = text.split("\n\n")  # separo i singoli articoli che sono divisi da una riga vuota
 
 # devo separare ogni riga: con regular expression individuo la stringa che separa
-#    separo quando ho le seguenti cose:
+# separo quando ho le seguenti cose:
 #    un a capo (\n) seguito da una o più lettere maiuscole([A-Z]+) ( il + è uno o più) ( le parentesi tonde servono a
 #       non eliminare il contenuto)
 #    zero o più spazi (\s)* (\s spazio, * zero o più)
 #    un trattino (-)
 #    zero o più spazi (\s)* (\s spazio, * zero o più)
 #
-# concateno una riga vuota davanti all'articolo in modo tale che anche il primo header venga preso
 reg=re.compile(r"\n([A-Z]+)\s*-\s*")
 
 # PROVE CON I DIVERSI METODI PER CAPIRE QUELLO PIU' VELOCE. FANNO TUTTE LA STESSA COSA
 start = time.time()
 articles_divided = list()
 for article in articles:
+    # concateno una riga vuota davanti all'articolo in modo tale che anche il primo header venga preso
     articles_divided.append(reg.split("\n" + article))
 regexpress_time = time.time()-start
 print(regexpress_time)
 
 start = time.time()
+# concateno una riga vuota davanti all'articolo in modo tale che anche il primo header venga preso
 articles_divided = [reg.split("\n" + article) for article in articles]
 regexpress_time = time.time()-start
 print(regexpress_time)
 
 start = time.time()
+# concateno una riga vuota davanti all'articolo in modo tale che anche il primo header venga preso
 articles_divided = list(map(lambda article: reg.split("\n" + article), articles))
 regexpress_time = time.time()-start
 print(regexpress_time)
