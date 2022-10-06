@@ -16,7 +16,6 @@ def query_param(query):
     f2_xml = f2.text
     dict2 = xmltodict.parse(f2_xml)
 
-    #if ['eFetchResult']['ERROR'] == 'Empty result - nothing to do':
     if 'eFetchResult' in dict2 and 'ERROR' in dict2["eFetchResult"]:
         msgbox('Empty result - nothing to do', 'Search Result', 'OK')
         exit()

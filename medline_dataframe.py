@@ -32,13 +32,18 @@ def extract_authors(article_dict: dict, key: str, header: str):
 # def extract_journal_names(article_dict):
 #
 #
-# def extract_studytypes(article_dict):
-#
-#
+def extract_studytype(article_dict: dict, key: str, header: str):
+    study_type = extract_description(article_dict, key, header)
+    return study_type
+
+
 def extract_keywords(article_dict: dict, key: str, header: str):
     author = extract_description(article_dict, key, header)
     return author
+
+
 #def extract_doi(article_dict):
+
 
 def extract_abstract(article_dict: dict, key: str, header: str):
     abstract = extract_description(article_dict, key, header)
@@ -56,7 +61,7 @@ def dict_to_dataframe(article_dict: dict):
                  'Date': [extract_date(article_dict,"DP","Date")],
                  'Authors': [extract_authors(article_dict,"AU","Author")],
                  # 'Journal': [extract_journal_name(article_dict,"JT","Journal")],
-                 #'Study Type': [extract_studytype(article_dict,"PT","Type")],
+                 'Study Type': [extract_studytype(article_dict,"PT","Type")],
                  'Keywords': [extract_keywords(article_dict,"OT","keyword")],
                  # 'DOI': [extract_doi(article_dict,"AID","DOI")],
                  'Abstract': [extract_abstract(article_dict,"AB","Abstract")]
