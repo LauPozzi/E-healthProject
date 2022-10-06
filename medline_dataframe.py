@@ -44,7 +44,17 @@ def extract_keywords(article_dict: dict, key: str, header: str):
     return author
 
 
-#def extract_doi(article_dict):
+def extract_doi(article_dict: dict, key: str, header: str):
+    DOI_std = "https://doi.org/"
+    doi = extract_description(article_dict, key, header)
+
+    reg = re.compile(r"([A-Za-z0-9\.\/]+)\s*\[doi]")
+
+    return DOI_std + reg.findall(doi)[0]
+
+
+
+
 
 
 def extract_abstract(article_dict: dict, key: str, header: str):
@@ -65,7 +75,7 @@ def dict_to_dataframe(article_dict: dict):
                  'Journal': [extract_journal_name(article_dict,"JT","Journal")],
                  'Study Type': [extract_studytype(article_dict,"PT","Type")],
                  'Keywords': [extract_keywords(article_dict,"OT","keyword")],
-                 # 'DOI': [extract_doi(article_dict,"AID","DOI")],
+                 'DOI': [extract_doi(article_dict,"AID","DOI")],
                  'Abstract': [extract_abstract(article_dict,"AB","Abstract")]
                  }
     print(data_dict)
@@ -73,7 +83,7 @@ def dict_to_dataframe(article_dict: dict):
 
 if __name__ == '__main__':
 
-    search_entry = 'serious game'
+    search_entry = 'serious game ADHD'
     search_entry = search_entry.split(' ')
     search_entry = '+'.join(search_entry)
     print(search_entry)
@@ -97,10 +107,10 @@ if __name__ == '__main__':
 
     articles = text_edit(webpage)
     # Trying with just the first article
-    article_tuple = article_division(articles[0])
+    article_tuple = article_division(articles[19])
     article_small = header_selection(article_tuple)
     article_dict = tuple_manag(article_small)
     df = dict_to_dataframe(article_dict)
     # df=pd.DataFrame(dic)
 
-    print(df)
+    print(df['DOI'])
