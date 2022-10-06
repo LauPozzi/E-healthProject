@@ -47,8 +47,25 @@ def tuple_manag(list_tuple) -> dict:
 
 
 if __name__ == '__main__':
+
     link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key=1&WebEnv=MCID_633ef027b9dd030b563aebc4&rettype=medline"
     webpage = requests.get(link1)
+
+    # search_entry = 'serious game'
+    # search_entry = search_entry.split(' ')
+    # search_entry = '+'.join(search_entry)
+    # print(search_entry)
+    #
+    # link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term={}&retmode=json" \
+    #         "&RetMax=1&WebEnv=%3Cwebenv%20string%3E&usehistory=y ".format(search_entry)
+    #
+    # f1 = requests.get(link1)
+    # dict1 = f1.json()
+    # dict2 = dict1['esearchresult']
+    link2 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key=1&WebEnv=MCID_633eefab4619a7137e059d23&retmode=xml"
+
+    webpage = requests.get(link2)
+
     articles = text_edit(webpage)
     # Trying with just the first article
     article_tuple = article_division(articles[0])
