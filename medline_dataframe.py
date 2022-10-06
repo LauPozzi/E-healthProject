@@ -9,29 +9,37 @@ import xmltodict
 import collections
 from medline_article import *
 
-#TODO: magage, authors, keywords and abstracts extraction in case there are none
+
+# TODO: magage, authors, keywords and abstracts extraction in case there are none
 
 def extract_description(article_dict: dict, key: str, header: str):
-    if article_dict.get(key)== None:
+    if article_dict.get(key) == None:
         return f"{header} not found"
     else:
         return article_dict.get(key)
+
 
 def extract_title(article_dict: dict, key: str, header: str):
     title = extract_description(article_dict, key, header)
     return title
 
+
 def extract_date(article_dict: dict, key: str, header: str):
     date = extract_description(article_dict, key, header)
     return date
+
+
 #
 def extract_authors(article_dict: dict, key: str, header: str):
     author = extract_description(article_dict, key, header)
     return author
+
+
 #
 def extract_journal_name(article_dict: dict, key: str, header: str):
     journal = extract_description(article_dict, key, header)
     return journal
+
 
 #
 def extract_studytype(article_dict: dict, key: str, header: str):
@@ -53,13 +61,11 @@ def extract_doi(article_dict: dict, key: str, header: str):
     return DOI_std + reg.findall(doi)[0]
 
 
-
-
-
-
 def extract_abstract(article_dict: dict, key: str, header: str):
     abstract = extract_description(article_dict, key, header)
     return abstract
+
+
 def dict_to_dataframe(article_dict: dict):
     """
 
@@ -69,20 +75,20 @@ def dict_to_dataframe(article_dict: dict):
     :rtype:
     """
 
-    data_dict = {'Article Title': [extract_title(article_dict,"TI","Title")],
-                 'Date': [extract_date(article_dict,"DP","Date")],
-                 'Authors': [extract_authors(article_dict,"AU","Author")],
-                 'Journal': [extract_journal_name(article_dict,"JT","Journal")],
-                 'Study Type': [extract_studytype(article_dict,"PT","Type")],
-                 'Keywords': [extract_keywords(article_dict,"OT","keyword")],
-                 'DOI': [extract_doi(article_dict,"AID","DOI")],
-                 'Abstract': [extract_abstract(article_dict,"AB","Abstract")]
+    data_dict = {'Article Title': [extract_title(article_dict, "TI", "Title")],
+                 'Date': [extract_date(article_dict, "DP", "Date")],
+                 'Authors': [extract_authors(article_dict, "AU", "Author")],
+                 'Journal': [extract_journal_name(article_dict, "JT", "Journal")],
+                 'Study Type': [extract_studytype(article_dict, "PT", "Type")],
+                 'Keywords': [extract_keywords(article_dict, "OT", "keyword")],
+                 'DOI': [extract_doi(article_dict, "AID", "DOI")],
+                 'Abstract': [extract_abstract(article_dict, "AB", "Abstract")]
                  }
     print(data_dict)
     return pd.DataFrame(data_dict)
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     search_entry = 'serious game ADHD'
     search_entry = search_entry.split(' ')
     search_entry = '+'.join(search_entry)
@@ -100,8 +106,6 @@ if __name__ == '__main__':
     # FETCH API
     link2 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key={}&WebEnv={}&rettype=medline".format(
         dict2['querykey'], dict2['webenv'])
-
-
 
     webpage = requests.get(link2)
 
