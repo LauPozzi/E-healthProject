@@ -21,8 +21,9 @@ def extract_title(article_dict: dict, key: str, header: str):
     title = extract_description(article_dict, key, header)
     return title
 
-# def extract_dates(article_dict):
-#
+def extract_date(article_dict: dict, key: str, header: str):
+    date = extract_description(article_dict, key, header)
+    return date
 #
 # def extract_authors(article_dict):
 #
@@ -51,7 +52,7 @@ def dict_to_dataframe(article_dict: dict):
     """
 
     data_dict = {'Article Title': [extract_title(article_dict,"TI","Title")],
-                 # 'Date': extract_date(article_dict,"DP","Date"),
+                 'Date': [extract_date(article_dict,"DP","Date")],
                  # 'Authors': extract_author(article_dict,"AU","Author"),
                  'Journal': [extract_journal_name(article_dict,"JT","Journal")],
                  # 'Study Type': extract_studytype(article_dict,"PT","Type"),
@@ -69,16 +70,26 @@ if __name__ == '__main__':
     print(search_entry)
 
     link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term={}&retmode=json" \
-            "&RetMax=1&WebEnv=%3Cwebenv%20string%3E&usehistory=y ".format(search_entry)
-
+            "&RetMax=100&WebEnv=%3Cwebenv%20string%3E&usehistory=y ".format(search_entry)
+    print(link1)
     f1 = requests.get(link1)
-    link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key=1&WebEnv=MCID_633efb154a13140761291466&rettype=medline"
-    webpage = requests.get(link1)
+
+    dict1 = f1.json()
+    dict2 = dict1['esearchresult']
+    # If we want to use the fetch API we need webenv and querykey
+
+    # FETCH API
+    link2 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key={}&WebEnv={}&rettype=medline".format(
+        dict2['querykey'], dict2['webenv'])
+
+
+    webpage = requests.get(link2)
+
     articles = text_edit(webpage)
     # Trying with just the first article
     article_tuple = article_division(articles[0])
     article_small = header_selection(article_tuple)
     article_dict = tuple_manag(article_small)
-    df= dict_to_dataframe(article_dict)
+    df = dict_to_dataframe(article_dict)
     # df=pd.DataFrame(dic)
     print(df)
