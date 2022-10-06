@@ -50,30 +50,29 @@ def extract_keywords(article_dict: dict, key: str, header: str):
 def extract_abstract(article_dict: dict, key: str, header: str):
     abstract = extract_description(article_dict, key, header)
     return abstract
-def dict_to_dataframe(article_dict: dict):
-    """
 
+def dict_to_dataframe(article_dict: dict, data_dict: dict):
+    """
     :param article_set:
     :type article_set:
     :return:
     :rtype:
     """
-
-    data_dict = {'Article Title': [extract_title(article_dict,"TI","Title")],
-                 'Date': [extract_date(article_dict,"DP","Date")],
-                 'Authors': [extract_authors(article_dict,"AU","Author")],
-                 'Journal': [extract_journal_name(article_dict,"JT","Journal")],
-                 'Study Type': [extract_studytype(article_dict,"PT","Type")],
-                 'Keywords': [extract_keywords(article_dict,"OT","keyword")],
+    data_dict['Article Title'].append(extract_title(article_dict,"TI","Title")),
+    data_dict['Date'].append(extract_date(article_dict,"DP","Date")),
+    data_dict['Authors'].append(extract_authors(article_dict,"AU","Author")),
+    data_dict['Journal'].append(extract_journal_name(article_dict,"JT","Journal")),
+    data_dict['Study Type'].append(extract_studytype(article_dict,"PT","Type")),
+    data_dict['Keywords'].append(extract_keywords(article_dict,"OT","keyword")),
                  # 'DOI': [extract_doi(article_dict,"AID","DOI")],
-                 'Abstract': [extract_abstract(article_dict,"AB","Abstract")]
-                 }
-    print(data_dict)
-    return pd.DataFrame(data_dict)
+    data_dict['Abstract'].append(extract_abstract(article_dict,"AB","Abstract"))
+    #print(data)
+
+    return data_dict
 
 if __name__ == '__main__':
 
-    search_entry = 'serious game'
+    search_entry = 'serious game ADHD'
     search_entry = search_entry.split(' ')
     search_entry = '+'.join(search_entry)
     print(search_entry)
@@ -96,11 +95,22 @@ if __name__ == '__main__':
     webpage = requests.get(link2)
 
     articles = text_edit(webpage)
-    # Trying with just the first article
-    article_tuple = article_division(articles[0])
-    article_small = header_selection(article_tuple)
-    article_dict = tuple_manag(article_small)
-    df = dict_to_dataframe(article_dict)
-    # df=pd.DataFrame(dic)
+    dic = {'Article Title': [],
+                 'Date': [],
+                 'Authors': [],
+                 'Journal': [],
+                 'Study Type': [],
+                 'Keywords': [],
+                 # 'DOI': [],
+                 'Abstract': []
+                 }
+    for article in articles:
+        # Trying with just the first article
+        article_tuple = article_division(article)
+        article_small = header_selection(article_tuple)
+        article_dict = tuple_manag(article_small)
+        dic = dict_to_dataframe(article_dict, dic)
+
+    df=pd.DataFrame(dic)
 
     print(df)
