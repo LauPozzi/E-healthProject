@@ -38,19 +38,21 @@ def tuple_manag(list_tuple) -> dict:
     c = collections.defaultdict(list)
     for a,b in list_tuple_nospace:
         c[a].append(b)
-    dict_nodouble = dict(c.items())
+    dict_nodouble = dict(c.items()) # back to a normal dict since the problem of missing key will be handle in a following funct
+    ## TODO: bisogna concatenare i risultati, magari separati da una virgola
+    # dict_str = {k: str(v) for k,v in dict_nodouble.items()} # non viene
     return dict_nodouble
 
 
 if __name__ == '__main__':
-    link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key=1&WebEnv=MCID_633da339bb0361170641f64b&rettype=medline"
+    link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key=1&WebEnv=MCID_633e83961c35b761220f7d36&rettype=medline"
     webpage = requests.get(link1)
     articles = text_edit(webpage)
     # Trying with just the first article
     article_tuple = article_division(articles[0])
     article_small = header_selection(article_tuple)
     article_dict = tuple_manag(article_small)
-    print(article_final)
+    print(article_dict)
 #
 #
 #
