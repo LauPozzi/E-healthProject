@@ -9,29 +9,38 @@ import xmltodict
 import collections
 from medline_article import *
 
-#TODO: magage, authors, keywords and abstracts extraction in case there are none
+
+# TODO: magage, authors, keywords and abstracts extraction in case there are none
 
 def extract_description(article_dict: dict, key: str, header: str):
-    if article_dict.get(key)== None:
-        return f"{header} not found"
+    if article_dict.get(key) == None:
+        return pd.NA
+#        return f"{header} not found"
     else:
         return article_dict.get(key)
+
 
 def extract_title(article_dict: dict, key: str, header: str):
     title = extract_description(article_dict, key, header)
     return title
 
+
 def extract_date(article_dict: dict, key: str, header: str):
     date = extract_description(article_dict, key, header)
     return date
+
+
 #
 def extract_authors(article_dict: dict, key: str, header: str):
     author = extract_description(article_dict, key, header)
     return author
+
+
 #
 def extract_journal_name(article_dict: dict, key: str, header: str):
     journal = extract_description(article_dict, key, header)
     return journal
+
 
 #
 def extract_studytype(article_dict: dict, key: str, header: str):
@@ -44,12 +53,19 @@ def extract_keywords(article_dict: dict, key: str, header: str):
     return author
 
 
-#def extract_doi(article_dict):
+def extract_doi(article_dict: dict, key: str, header: str):
+    DOI_std = "https://doi.org/"
+    doi = extract_description(article_dict, key, header)
+
+    reg = re.compile(r"([A-Za-z0-9\.\/]+)\s*\[doi]")
+
+    return DOI_std + reg.findall(doi)[0]
 
 
 def extract_abstract(article_dict: dict, key: str, header: str):
     abstract = extract_description(article_dict, key, header)
     return abstract
+
 
 def dict_to_dataframe(article_dict: dict, data_dict: dict):
     """
@@ -64,14 +80,13 @@ def dict_to_dataframe(article_dict: dict, data_dict: dict):
     data_dict['Journal'].append(extract_journal_name(article_dict,"JT","Journal")),
     data_dict['Study Type'].append(extract_studytype(article_dict,"PT","Type")),
     data_dict['Keywords'].append(extract_keywords(article_dict,"OT","keyword")),
-                 # 'DOI': [extract_doi(article_dict,"AID","DOI")],
+    data_dict['DOI'].append(extract_doi(article_dict, "AID", "DOI")),
     data_dict['Abstract'].append(extract_abstract(article_dict,"AB","Abstract"))
-    #print(data)
 
     return data_dict
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     search_entry = 'serious game ADHD'
     search_entry = search_entry.split(' ')
     search_entry = '+'.join(search_entry)
@@ -90,20 +105,22 @@ if __name__ == '__main__':
     link2 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key={}&WebEnv={}&rettype=medline".format(
         dict2['querykey'], dict2['webenv'])
 
-
+    print(link2)
 
     webpage = requests.get(link2)
 
     articles = text_edit(webpage)
+
     dic = {'Article Title': [],
                  'Date': [],
                  'Authors': [],
                  'Journal': [],
                  'Study Type': [],
                  'Keywords': [],
-                 # 'DOI': [],
+                 'DOI': [],
                  'Abstract': []
                  }
+
     for article in articles:
         # Trying with just the first article
         article_tuple = article_division(article)
@@ -112,5 +129,4 @@ if __name__ == '__main__':
         dic = dict_to_dataframe(article_dict, dic)
 
     df=pd.DataFrame(dic)
-
-    print(df)
+    df.to_csv('export_dataframe.csv', index=False)
