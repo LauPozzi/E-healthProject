@@ -27,8 +27,10 @@ def extract_title(article_dict: dict, key: str, header: str):
 # def extract_authors(article_dict):
 #
 #
-# def extract_journal_names(article_dict):
-#
+def extract_journal_name(article_dict: dict, key: str, header: str):
+    journal = extract_description(article_dict, key, header)
+    return journal
+
 #
 # def extract_studytypes(article_dict):
 #
@@ -48,10 +50,10 @@ def dict_to_dataframe(article_dict: dict):
     :rtype:
     """
 
-    data_dict = {'Article Title': extract_title(article_dict,"TI","Title"),
+    data_dict = {'Article Title': [extract_title(article_dict,"TI","Title")],
                  # 'Date': extract_date(article_dict,"DP","Date"),
                  # 'Authors': extract_author(article_dict,"AU","Author"),
-                 # 'Journal': extract_journal_name(article_dict,"JT","Journal"),
+                 'Journal': [extract_journal_name(article_dict,"JT","Journal")],
                  # 'Study Type': extract_studytype(article_dict,"PT","Type"),
                  # 'Keywords': extract_keyword(article_dict,"OT","keyword"),
                  # 'DOI': extract_doi(article_dict,"AID","DOI"),
@@ -70,7 +72,7 @@ if __name__ == '__main__':
             "&RetMax=1&WebEnv=%3Cwebenv%20string%3E&usehistory=y ".format(search_entry)
 
     f1 = requests.get(link1)
-    link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key=1&WebEnv=MCID_633da339bb0361170641f64b&rettype=medline"
+    link1 = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&query_key=1&WebEnv=MCID_633efb154a13140761291466&rettype=medline"
     webpage = requests.get(link1)
     articles = text_edit(webpage)
     # Trying with just the first article
