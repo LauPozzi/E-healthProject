@@ -42,6 +42,8 @@ def main():
 
     df.to_csv('export_dataframe.csv', index=False)
 
+    return df
+
 
 if __name__ == '__main__':
     main()
