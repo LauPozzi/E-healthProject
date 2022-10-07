@@ -1,7 +1,8 @@
 from easygui import enterbox, msgbox
-from query_parameters import query_param
-import json
+from query_utils import query_search, query_fetch
+from medline_utils import concat_articles
 from dict2dataframe import *
+
 
 def main():
     # user enters string
@@ -10,20 +11,36 @@ def main():
         msgbox('No string inserted', 'Message', 'OK')
         exit()
     # returns dict with all articles information
-    articles_dict = query_param(string)
 
-    # save dict as json to see the structure . Once open data.json ctrl+alt+L too see structure
-    # with open('data.json', 'w') as f:
-    #    json.dump(articles_dict, f)
+    key, webenv, count = query_search(string)
 
-    print(articles_dict['PubmedArticle'][0]['MedlineCitation']['Article']['ArticleTitle'])
+    dic = {'Article Title': [],
+           'Date': [],
+           'Authors': [],
+           'Journal': [],
+           'Study Type': [],
+           'Keywords': [],
+           'DOI': [],
+           'Abstract': []
+           }
 
-    # TODO: call to dict2dataframe.dict_2_dataframe()
-    db=dict_2_dataframe(articles_dict) #function from dict2dataframe_Laura
-    print(db)
+    RETMAX = 10000
+    chunks = math.ceil(int(count) / RETMAX)
 
-    # TODO: create csv
-    db.to_csv('export_dataframe.csv', sep='$', index=None)
+    for i in range(chunks):
+
+        articles = query_fetch(key, webenv, i, RETMAX)
+
+        start = time.time()
+
+        for article in articles:
+            dic = concat_articles(article, dic)
+
+        print(time.time()-start)
+
+    df = pd.DataFrame(dic)
+
+    df.to_csv('export_dataframe.csv', index=False)
 
 
 if __name__ == '__main__':
