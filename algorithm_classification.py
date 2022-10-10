@@ -6,17 +6,12 @@ def count_words(text, blacklist_words):
     #code taken from: https://www.geeksforgeeks.org/python-count-occurrences-of-each-word-in-given-text-file/
 
     d = dict()
-
     # Remove the leading spaces and newline character
     line = text.strip()
-
-    # Convert the characters in line to
-    # lowercase to avoid case mismatch
+    # Convert the characters in line to lowercase to avoid case mismatch
     line = line.lower()
-
     # Remove the punctuation marks from the line
     line = line.translate(line.maketrans("", "", string.punctuation))
-
     # Split the line into words
     words = line.split()
 
@@ -27,20 +22,20 @@ def count_words(text, blacklist_words):
         # Increment count of word by 1
             d[word] = d[word] + 1
         else:
-        # Add the word to dictionary with count 1
             if word in blacklist_words:
                 pass
             else:
+                # Add the word to dictionary with count 1
                 d[word] = 1
-
     return d
 
 
 
 def classification_alg():
+    #Getting the dataframe of articles
     df = main()
-
-    wordlist = [dict() for x in range(df.shape[0])]
+    wordlist_array = [dict() for x in range(df.shape[0])]
+    wordlist = {}
 
     #Step1 - count occurences of all words (minus black list)
     blacklist_dict = pd.read_csv('blacklist_dict.csv')
@@ -48,18 +43,16 @@ def classification_alg():
     blacklist = blacklist_dict['WORD'].tolist()
 
     for i in range(df.shape[0]):
-        wordlist[i] = count_words(df.iloc[i]['Abstract'], blacklist)
+        wordlist_array[i] = count_words(df.iloc[i]['Abstract'], blacklist)
 
-    print('hello')
+    #TODO: merge the all the dictionaries into a unique dict in oder to count the total occurrences per word
 
     #TODO: Step2 - create a dictionary based on a treshold
-
+        #TODO: considerare anche le occurrences delle parole nel "generic dictionary"
 
     #TODO: Step3 - scale the occurencies of the words in the dictionary in [0.06, 1]
 
-
     #TODO: Step4 - on each abstract compute the score and scale it in [0-1]
-
 
     #TODO: Step5 - scaled score > 0.09 --> classify as 1
 
