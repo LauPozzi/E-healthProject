@@ -4,6 +4,7 @@ import pandas as pd
 from easygui import enterbox, msgbox
 from query_utils import query_search, query_fetch
 from medline_utils import concat_articles
+from create_dictionary import word_counter
 
 
 
@@ -40,6 +41,10 @@ def main():
             dic = concat_articles(article, dic)
 
         print(time.time()-start)
+
+
+    print(word_counter(dic['Article Title'][0]))
+
 
     df = pd.DataFrame(dic)
 
