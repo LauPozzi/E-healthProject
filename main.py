@@ -42,10 +42,6 @@ def main():
 
         print(time.time()-start)
 
-
-    print(word_counter(dic['Article Title'][0]))
-
-
     df = pd.DataFrame(dic)
 
     df.to_csv('export_dataframe.csv', index=False)

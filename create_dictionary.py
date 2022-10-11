@@ -4,7 +4,7 @@ import pandas as pd
 
 def word_counter(str):
     counts = dict()
-    file = pd.read_excel('black_list.xlsx', engine='openpyxl')
+    file = pd.read_excel('blacklist_dict.xlsx', engine='openpyxl')
     black_list = list(file['WORD'])
     str = re.sub(r'[.,"\'-?:!;]', '', str)  # remove punctuation from the string
     words = str.split()
