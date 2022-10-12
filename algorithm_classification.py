@@ -50,6 +50,7 @@ def count_words(text: str, blacklist_words: list, d: dict):
 def classification_alg():
     # Getting the dataframe of articles
     df = main()
+    df.fillna("None", inplace=True)
     # wordlist_array = [dict() for x in range(df.shape[0])]
 
     # Step1 - count occurences of all words (minus black list)
@@ -81,6 +82,7 @@ def classification_alg():
         else:
             continue
     print(dictionary)
+
     # TODO: considerare anche le occurrences delle parole nel "generic dictionary"
 
     # TODO: Step3 - scale the occurencies of the words in the dictionary in [0.06, 1]
