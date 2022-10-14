@@ -1,12 +1,14 @@
 import pandas as pd
 from main import main
 import re
+from nltk.stem import LancasterStemmer
 
 ARTICLE_BLACKLIST = 11000
 
 
-def count_words(text: str, d: dict) -> dict:
-    # code taken from: https://www.geeksforgeeks.org/python-count-occurrences-of-each-word-in-given-text-file/
+# TODO: trovare un nome migliore
+def text_normalizer(text: str, list_words: list = []) -> [list]:
+
     # Remove the leading spaces and newline character
     line = text.strip()
     # Convert the characters in line to lowercase to avoid case mismatch
@@ -16,6 +18,19 @@ def count_words(text: str, d: dict) -> dict:
     line = re.sub(r'[\([{})\]]', ' ', line)
     # Split the line into words
     words = line.split()
+
+    # words lemmatisation
+    lancaster = LancasterStemmer()
+    lemmatised_words = list(map(lambda w: lancaster.stem(w), words))
+
+    if list_words:
+        list_words = list(map(lambda w: str(w), list_words))
+        list_words = list(map(lambda w: lancaster.stem(w), list_words))
+
+    return lemmatised_words, list_words
+
+def count_words(text: str, d: dict) -> dict:
+    words, blacklist_words = text_normalizer(text=text)
 
     # Iterate over each word in line
     for word in words:
@@ -28,21 +43,11 @@ def count_words(text: str, d: dict) -> dict:
             d[word] = 1
     return d
 
-
 def count_words_perarticle(text: str) -> dict:
     # code taken from: https://www.geeksforgeeks.org/python-count-occurrences-of-each-word-in-given-text-file/
     d = dict()
-    # Remove the leading spaces and newline character
-    line = text.strip()
-    # Convert the characters in line to lowercase to avoid case mismatch
-    line = line.lower()
-    # TODO: deal with plurals
 
-    # Remove the punctuation marks from the line
-    line = re.sub(r'[.,"\'-?:!;]', ' ', line)
-    line = re.sub(r'[\([{})\]]', ' ', line)
-    # Split the line into words
-    words = line.split()
+    words, blacklist_words = text_normalizer(text=text)
 
     # Iterate over each word in line
     for word in words:
@@ -108,7 +113,6 @@ def matching_articles(score: list, threshold: float):
             matching.append(0)
     return matching
 
-
 def classification_alg():
     # Getting the dataframe of articles
     df = main()
@@ -118,9 +122,12 @@ def classification_alg():
     wordlist_list_kw = [dict() for x in range(df.shape[0])]
 
     # Step1 - count occurrences of all words (minus black list)
-    blacklist_df = pd.read_excel('blacklist_dict.xlsx', engine='openpyxl')
 
+    blacklist_df = pd.read_excel('blacklist_dict.xlsx', engine='openpyxl')
     blacklist = dict(blacklist_df.values)
+
+    # TODO: make blacklist dict/set to improve performance
+
 
     wordlist_abstract = dict()
     wordlist_title = dict()
