@@ -1,8 +1,6 @@
 import pandas as pd
 from main import main
 import re
-import string
-import sklearn.preprocessing as sk
 
 
 def count_words(text: str, blacklist_words: list, d: dict) -> dict:
@@ -88,6 +86,26 @@ def scaler(NewMin: float, NewMax: float, values: list, x: float):
     return ((x - min_) * (NewMax - NewMin) / (max_ - min_) + NewMin)
 
 
+def compute_score(wordlist_list, dict_weights):
+    score = list()
+    score_norm = list()
+    for d in wordlist_list:
+        score.append(score_attribution(d, dict_weights))
+
+    for x in score:
+        score_norm.append(scaler(0, 1, score, x))
+    return score_norm
+
+
+def matching_articles(score, threshold):
+    matching = list()
+    for x in score:
+        if x >= threshold:
+            matching.append(1)
+        else:
+            matching.append(0)
+    return matching
+
 
 def classification_alg():
     # Getting the dataframe of articles
@@ -97,7 +115,7 @@ def classification_alg():
     wordlist_list_ti = [dict() for x in range(df.shape[0])]
     wordlist_list_kw = [dict() for x in range(df.shape[0])]
 
-    # Step1 - count occurences of all words (minus black list)
+    # Step1 - count occurrences of all words (minus black list)
     blacklist_dict = pd.read_excel('blacklist_dict.xlsx', engine='openpyxl')
     # blacklist_dict.head(3)
     blacklist = list(blacklist_dict['WORD'])
@@ -105,7 +123,7 @@ def classification_alg():
     wordlist_abstract = dict()
     wordlist_title = dict()
     wordlist_keywords = dict()
-    # TODO: farlo anche per title e keywords
+
     for i in range(df.shape[0]):
         wordlist_abstract = count_words(df.iloc[i]['Abstract'], blacklist, wordlist_abstract)
         wordlist_title = count_words(df.iloc[i]['Article Title'], blacklist, wordlist_title)
@@ -133,24 +151,16 @@ def classification_alg():
     # TODO: gestire errore dove min=max
 
     # Step4 - on each abstract compute the score and scale it in [0-1]
-    score = list()
-    score_norm = list()
-    for d in wordlist_list_abs:
-       score.append(score_attribution(d, dict_weights_abstract))
 
-    for x in score:
-       score_norm.append(scaler(0, 1, score, x))
+    score_abs = compute_score(wordlist_list_abs, dict_weights_abstract)
+    score_ti = compute_score(wordlist_list_ti, dict_weights_title)
+    score_kw = compute_score(wordlist_list_kw, dict_weights_keywords)
 
+    score_final = list(map(lambda abstract, ti, kw: abstract + 5 * ti + 5 * kw, score_abs, score_ti, score_kw))
 
     # Step5 - scaled score > 0.09 --> classify as 1
-    matching = list()
-    treshold = 0.09
-
-    for x in score_norm:
-        if x >= treshold:
-            matching.append(1)
-        else:
-            matching.append(0)
+    threshold = 0.09
+    matching = matching_articles(score_final, threshold)
 
     df['Match'] = matching
 
