@@ -7,30 +7,34 @@ ARTICLE_BLACKLIST = 11000
 
 
 # TODO: trovare un nome migliore
-def text_normalizer(text: str, list_words: list = []) -> [list]:
-
-    # Remove the leading spaces and newline character
-    line = text.strip()
-    # Convert the characters in line to lowercase to avoid case mismatch
-    line = line.lower()
-    # Remove the punctuation marks from the line
-    line = re.sub(r'[.,"\'-?:!;]', ' ', line)
-    line = re.sub(r'[\([{})\]]', ' ', line)
-    # Split the line into words
-    words = line.split()
-
-    # words lemmatisation
+def text_normalizer(text: str = '', list_words: dict = {}) -> [list]:
+    lemmatised_words = []
     lancaster = LancasterStemmer()
-    lemmatised_words = list(map(lambda w: lancaster.stem(w), words))
+
+    if str:
+        # Remove the leading spaces and newline character
+        line = text.strip()
+        # Convert the characters in line to lowercase to avoid case mismatch
+        line = line.lower()
+        # Remove the punctuation marks from the line
+        line = re.sub(r'[.,"\'-?:!;]', ' ', line)
+        line = re.sub(r'[\([{})\]]', ' ', line)
+        # Split the line into words
+        words = line.split()
+
+        # words lemmatisation
+        lemmatised_words = list(map(lambda w: lancaster.stem(w), words))
 
     if list_words:
-        list_words = list(map(lambda w: str(w), list_words))
-        list_words = list(map(lambda w: lancaster.stem(w), list_words))
+        # TODO: ricrea dizionario da zero
+        list_words = {str(k): v for k, v in list_words.items()}
+        # list_words = {lancaster.stem(k): v for k, v in list_words.items()}
 
     return lemmatised_words, list_words
 
+
 def count_words(text: str, d: dict) -> dict:
-    words, blacklist_words = text_normalizer(text=text)
+    words, _ = text_normalizer(text=text)
 
     # Iterate over each word in line
     for word in words:
@@ -43,11 +47,11 @@ def count_words(text: str, d: dict) -> dict:
             d[word] = 1
     return d
 
+
 def count_words_perarticle(text: str) -> dict:
-    # code taken from: https://www.geeksforgeeks.org/python-count-occurrences-of-each-word-in-given-text-file/
     d = dict()
 
-    words, blacklist_words = text_normalizer(text=text)
+    words, _ = text_normalizer(text=text)
 
     # Iterate over each word in line
     for word in words:
@@ -63,18 +67,14 @@ def count_words_perarticle(text: str) -> dict:
 
 def create_dict(wordlist: dict, threshold: float, size_df: int, blacklist: dict):
     wordlist = {k: v / size_df for k, v in wordlist.items()}
-    dictionary=dict()
+    dictionary = dict()
+
+    _, blacklist = text_normalizer(list_words=blacklist)
+
     for value in wordlist.items():
         if value[1] > threshold and value[1] > 4 * blacklist.get(value[0], 0) / ARTICLE_BLACKLIST:
             dictionary[value[0]] = value[1]
 
-    #      for value in wordlist.items():
-    #      dictionary[value[0]] = value[1] / size_df
-    #     if value[1] > threshold and
-    #        del dictionary[value[0]]
-    #   else:
-    #
-    #           continue
     print(dictionary)
     return dictionary
 
@@ -116,6 +116,7 @@ def matching_articles(score: list, threshold: float):
             matching.append(0)
     return matching
 
+
 def classification_alg():
     # Getting the dataframe of articles
     df = main()
@@ -128,9 +129,6 @@ def classification_alg():
 
     blacklist_df = pd.read_excel('blacklist_dict.xlsx', engine='openpyxl')
     blacklist = dict(blacklist_df.values)
-
-    # TODO: make blacklist dict/set to improve performance
-
 
     wordlist_abstract = dict()
     wordlist_title = dict()
@@ -151,7 +149,6 @@ def classification_alg():
     dictionary_title = create_dict(wordlist_title, threshold, df.shape[0], blacklist)
     dictionary_keywords = create_dict(wordlist_keywords, threshold, df.shape[0], blacklist)
 
-
     # Step3 - scale the occurrences of the words in the dictionary in [0.06, 1]
 
     values_abs = dictionary_abstract.values()
@@ -160,7 +157,6 @@ def classification_alg():
     dict_weights_abstract = {key: (scaler(0.06, 1, values_abs, v)) for (key, v) in dictionary_abstract.items()}
     dict_weights_title = {key: (scaler(0.06, 1, values_ti, v)) for (key, v) in dictionary_title.items()}
     dict_weights_keywords = {key: (scaler(0.06, 1, values_kw, v)) for (key, v) in dictionary_keywords.items()}
-    # TODO: gestire errore dove min=max
 
     # Step4 - on each abstract compute the score and scale it in [0-1]
 
