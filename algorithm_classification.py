@@ -85,7 +85,10 @@ def score_attribution(article_dict: dict, gold_std: dict) -> float:
 def scaler(NewMin: float, NewMax: float, values: list, x: float):
     min_ = min(values)
     max_ = max(values)
-    return ((x - min_) * (NewMax - NewMin) / (max_ - min_) + NewMin)
+    result = 1
+    if min_ != max_:
+        result = ((x - min_) * (NewMax - NewMin) / (max_ - min_) + NewMin)
+    return result
 
 
 
@@ -115,7 +118,7 @@ def classification_alg():
         wordlist_list_kw[i] = count_words_perarticle(df.iloc[i]['Keywords'], blacklist)
 
     # Step2 - create a dictionary based on a threshold
-    threshold = 0.1
+    threshold = 0.2
     dictionary_abstract = create_dict(wordlist_abstract, threshold, df.shape[0])
     dictionary_title = create_dict(wordlist_title, threshold, df.shape[0])
     dictionary_keywords = create_dict(wordlist_keywords, threshold, df.shape[0])

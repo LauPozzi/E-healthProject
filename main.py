@@ -2,7 +2,7 @@ import math
 import time
 import pandas as pd
 from easygui import enterbox, msgbox
-from query_utils import query_search, query_fetch
+from query_utils import query_search, fetch
 from medline_utils import concat_articles
 from create_dictionary import word_counter
 
@@ -33,7 +33,7 @@ def main():
 
     for i in range(chunks):
 
-        articles = query_fetch(key, webenv, i, RETMAX)
+        articles = fetch(key, webenv, i, RETMAX)
 
         start = time.time()
 
