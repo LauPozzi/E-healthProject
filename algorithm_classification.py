@@ -3,10 +3,11 @@ from main import main
 import re
 import string
 import sklearn.preprocessing as sk
+from nltk.stem import LancasterStemmer
 
+# TODO: trovare un nome migliore
+def text_normalizer(text: str, list_words: list = []) -> [list]:
 
-def count_words(text: str, blacklist_words: list, d: dict) -> dict:
-    # code taken from: https://www.geeksforgeeks.org/python-count-occurrences-of-each-word-in-given-text-file/
     # Remove the leading spaces and newline character
     line = text.strip()
     # Convert the characters in line to lowercase to avoid case mismatch
@@ -16,6 +17,19 @@ def count_words(text: str, blacklist_words: list, d: dict) -> dict:
     line = re.sub(r'[\([{})\]]', ' ', line)
     # Split the line into words
     words = line.split()
+
+    # words lemmatisation
+    lancaster = LancasterStemmer()
+    lemmatised_words = list(map(lambda w: lancaster.stem(w), words))
+
+    if list_words:
+        list_words = list(map(lambda w: str(w), list_words))
+        list_words = list(map(lambda w: lancaster.stem(w), list_words))
+
+    return lemmatised_words, list_words
+
+def count_words(text: str, blacklist_words: list, d: dict) -> dict:
+    words, blacklist_words = text_normalizer(text=text, list_words=blacklist_words)
 
     # Iterate over each word in line
     for word in words:
@@ -33,19 +47,9 @@ def count_words(text: str, blacklist_words: list, d: dict) -> dict:
 
 
 def count_words_perarticle(text: str, blacklist_words: list) -> dict:
-    # code taken from: https://www.geeksforgeeks.org/python-count-occurrences-of-each-word-in-given-text-file/
     d = dict()
-    # Remove the leading spaces and newline character
-    line = text.strip()
-    # Convert the characters in line to lowercase to avoid case mismatch
-    line = line.lower()
-    # TODO: deal with plurals
 
-    # Remove the punctuation marks from the line
-    line = re.sub(r'[.,"\'-?:!;]', ' ', line)
-    line = re.sub(r'[\([{})\]]', ' ', line)
-    # Split the line into words
-    words = line.split()
+    words, blacklist_words = text_normalizer(text=text, list_words=blacklist_words)
 
     # Iterate over each word in line
     for word in words:
@@ -88,7 +92,6 @@ def scaler(NewMin: float, NewMax: float, values: list, x: float):
     return ((x - min_) * (NewMax - NewMin) / (max_ - min_) + NewMin)
 
 
-
 def classification_alg():
     # Getting the dataframe of articles
     df = main()
@@ -100,6 +103,7 @@ def classification_alg():
     # Step1 - count occurences of all words (minus black list)
     blacklist_dict = pd.read_excel('blacklist_dict.xlsx', engine='openpyxl')
     # blacklist_dict.head(3)
+    # TODO: make blacklist dict/set to improve performance
     blacklist = list(blacklist_dict['WORD'])
 
     wordlist_abstract = dict()
