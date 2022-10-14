@@ -2,8 +2,10 @@ import pandas as pd
 from main import main
 import re
 
+ARTICLE_BLACKLIST = 11000
 
-def count_words(text: str, blacklist_words: list, d: dict) -> dict:
+
+def count_words(text: str, d: dict) -> dict:
     # code taken from: https://www.geeksforgeeks.org/python-count-occurrences-of-each-word-in-given-text-file/
     # Remove the leading spaces and newline character
     line = text.strip()
@@ -17,20 +19,17 @@ def count_words(text: str, blacklist_words: list, d: dict) -> dict:
 
     # Iterate over each word in line
     for word in words:
-        if word in blacklist_words:
-            continue
+        # Check if the word is already in dictionary
+        if word in d:
+            # Increment count of word by 1
+            d[word] = d[word] + 1
         else:
-            # Check if the word is already in dictionary
-            if word in d:
-                # Increment count of word by 1
-                d[word] = d[word] + 1
-            else:
-                # Add the word to dictionary with count 1
-                d[word] = 1
+            # Add the word to dictionary with count 1
+            d[word] = 1
     return d
 
 
-def count_words_perarticle(text: str, blacklist_words: list) -> dict:
+def count_words_perarticle(text: str) -> dict:
     # code taken from: https://www.geeksforgeeks.org/python-count-occurrences-of-each-word-in-given-text-file/
     d = dict()
     # Remove the leading spaces and newline character
@@ -52,22 +51,25 @@ def count_words_perarticle(text: str, blacklist_words: list) -> dict:
             # Increment count of word by 1
             d[word] = d[word] + 1
         else:
-            if word in blacklist_words:
-                pass
-            else:
-                # Add the word to dictionary with count 1
-                d[word] = 1
+            # Add the word to dictionary with count 1
+            d[word] = 1
     return d
 
 
-def create_dict(wordlist, threshold, size_df):
-    dictionary = wordlist.copy()
+def create_dict(wordlist: dict, threshold: float, size_df: int, blacklist: dict):
+    wordlist = {k: v / size_df for k, v in wordlist.items()}
+    dictionary=dict()
     for value in wordlist.items():
-        dictionary[value[0]] = value[1] / size_df
-        if value[1] / size_df < threshold:
-            del dictionary[value[0]]
-        else:
-            continue
+        if value[1] > threshold and value[1] > 4 * blacklist.get(value[0], 0) / ARTICLE_BLACKLIST:
+            dictionary[value[0]] = value[1]
+
+    #      for value in wordlist.items():
+    #      dictionary[value[0]] = value[1] / size_df
+    #     if value[1] > threshold and
+    #        del dictionary[value[0]]
+    #   else:
+    #
+    #           continue
     print(dictionary)
     return dictionary
 
@@ -86,7 +88,7 @@ def scaler(NewMin: float, NewMax: float, values: list, x: float):
     return ((x - min_) * (NewMax - NewMin) / (max_ - min_) + NewMin)
 
 
-def compute_score(wordlist_list, dict_weights):
+def compute_score(wordlist_list: list, dict_weights: dict):
     score = list()
     score_norm = list()
     for d in wordlist_list:
@@ -97,7 +99,7 @@ def compute_score(wordlist_list, dict_weights):
     return score_norm
 
 
-def matching_articles(score, threshold):
+def matching_articles(score: list, threshold: float):
     matching = list()
     for x in score:
         if x >= threshold:
@@ -116,29 +118,27 @@ def classification_alg():
     wordlist_list_kw = [dict() for x in range(df.shape[0])]
 
     # Step1 - count occurrences of all words (minus black list)
-    blacklist_dict = pd.read_excel('blacklist_dict.xlsx', engine='openpyxl')
-    # blacklist_dict.head(3)
-    blacklist = list(blacklist_dict['WORD'])
+    blacklist_df = pd.read_excel('blacklist_dict.xlsx', engine='openpyxl')
+
+    blacklist = dict(blacklist_df.values)
 
     wordlist_abstract = dict()
     wordlist_title = dict()
     wordlist_keywords = dict()
 
     for i in range(df.shape[0]):
-        wordlist_abstract = count_words(df.iloc[i]['Abstract'], blacklist, wordlist_abstract)
-        wordlist_title = count_words(df.iloc[i]['Article Title'], blacklist, wordlist_title)
-        wordlist_keywords = count_words(df.iloc[i]['Keywords'], blacklist, wordlist_keywords)
-        wordlist_list_abs[i] = count_words_perarticle(df.iloc[i]['Abstract'], blacklist)
-        wordlist_list_ti[i] = count_words_perarticle(df.iloc[i]['Article Title'], blacklist)
-        wordlist_list_kw[i] = count_words_perarticle(df.iloc[i]['Keywords'], blacklist)
+        wordlist_abstract = count_words(df.iloc[i]['Abstract'], wordlist_abstract)
+        wordlist_title = count_words(df.iloc[i]['Article Title'], wordlist_title)
+        wordlist_keywords = count_words(df.iloc[i]['Keywords'], wordlist_keywords)
+        wordlist_list_abs[i] = count_words_perarticle(df.iloc[i]['Abstract'])
+        wordlist_list_ti[i] = count_words_perarticle(df.iloc[i]['Article Title'])
+        wordlist_list_kw[i] = count_words_perarticle(df.iloc[i]['Keywords'])
 
     # Step2 - create a dictionary based on a threshold
-    threshold = 0.1
-    dictionary_abstract = create_dict(wordlist_abstract, threshold, df.shape[0])
-    dictionary_title = create_dict(wordlist_title, threshold, df.shape[0])
-    dictionary_keywords = create_dict(wordlist_keywords, threshold, df.shape[0])
-
-    # TODO: considerare anche le occurrences delle parole nel "generic dictionary"
+    threshold = 0.2
+    dictionary_abstract = create_dict(wordlist_abstract, threshold, df.shape[0], blacklist)
+    dictionary_title = create_dict(wordlist_title, threshold, df.shape[0], blacklist)
+    dictionary_keywords = create_dict(wordlist_keywords, threshold, df.shape[0], blacklist)
 
     # Step3 - scale the occurrences of the words in the dictionary in [0.06, 1]
 
@@ -168,6 +168,8 @@ def classification_alg():
 
     df.to_csv('export_dataframe_match.csv', index=False)
 
+
+# TODO: confusion matrix
 
 if __name__ == '__main__':
     classification_alg()
