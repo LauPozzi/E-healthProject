@@ -16,8 +16,6 @@ def main():
         exit()
     # returns dict with all articles information
 
-    key, webenv, count = query_search(string)
-
     dic = {'Article Title': [],
            'Date': [],
            'Authors': [],
@@ -25,22 +23,31 @@ def main():
            'Study Type': [],
            'Keywords': [],
            'DOI': [],
-           'Abstract': []
+           'Abstract': [],
+           'Process level': []
            }
 
-    RETMAX = 10000
-    chunks = math.ceil(int(count) / RETMAX)
+    bullet_points = ['clinical treatment', 'applications enhancement', 'diagnosis support', 'screening tests']
 
-    for i in range(chunks):
+    for point in bullet_points:
 
-        articles = fetch(key, webenv, i, RETMAX)
+        key, webenv, count = query_search(string, point)
 
-        start = time.time()
 
-        for article in articles:
-            dic = concat_articles(article, dic)
 
-        print(time.time()-start)
+        RETMAX = 10000
+        chunks = math.ceil(int(count) / RETMAX)
+
+        for i in range(chunks):
+
+            articles = fetch(key, webenv, i, RETMAX)
+
+            start = time.time()
+
+            for article in articles:
+                dic = concat_articles(article, dic, point)
+
+            print(time.time()-start)
 
     df = pd.DataFrame(dic)
 

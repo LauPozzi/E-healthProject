@@ -65,15 +65,15 @@ def extract_doi(article_dict: dict, key: str):
     except:
         return doi
 
-def concat_articles(article: list, dic: dict):
+def concat_articles(article: list, dic: dict, level_string: str):
     article_tuple = article_division(article)
     article_small = header_selection(article_tuple)
     article_dict = tuple_manag(article_small)
-    dic = article_2_dict(article_dict, dic)
+    dic = article_2_dict(article_dict, dic, level_string)
     return dic
 
 
-def article_2_dict(article_dict: dict, data_dict: dict):
+def article_2_dict(article_dict: dict, data_dict: dict, level_string: str):
     """
     :param article_set:
     :type article_set:
@@ -88,5 +88,6 @@ def article_2_dict(article_dict: dict, data_dict: dict):
     data_dict['Keywords'].append(extract_general(article_dict, "OT")),
     data_dict['DOI'].append(extract_doi(article_dict, "AID")),
     data_dict['Abstract'].append(extract_general(article_dict, "AB"))
+    data_dict['Process level'].append(level_string)
 
     return data_dict

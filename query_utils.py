@@ -33,8 +33,8 @@ def create_query(string):
                 final_query = '(' + sub_query_str
     return final_query
 
-def query_search(string):
-    query = string
+def query_search(main_string, level_string):
+    query = main_string + ' ' + level_string
 #    query = create_query(string)
     newString = query.replace(" ", "+")
     final_query = create_query(newString)
