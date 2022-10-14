@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import pandas as pd
 from main import main
 import re
@@ -7,8 +9,9 @@ ARTICLE_BLACKLIST = 11000
 
 
 # TODO: trovare un nome migliore
-def text_normalizer(text: str = '', list_words: dict = {}) -> [list]:
+def text_normalizer(text: str = '', dict_words: dict = {}) -> [list]:
     lemmatised_words = []
+    lemmatised_dict = {}
     lancaster = LancasterStemmer()
 
     if str:
@@ -25,12 +28,13 @@ def text_normalizer(text: str = '', list_words: dict = {}) -> [list]:
         # words lemmatisation
         lemmatised_words = list(map(lambda w: lancaster.stem(w), words))
 
-    if list_words:
-        # TODO: ricrea dizionario da zero
-        list_words = {str(k): v for k, v in list_words.items()}
-        # list_words = {lancaster.stem(k): v for k, v in list_words.items()}
+    if dict_words:
+        lemmatised_dict = defaultdict(int)
+        for value in dict_words.items():
+            key = lancaster.stem(str(value[0]))
+            lemmatised_dict[key] += value[1]
 
-    return lemmatised_words, list_words
+    return lemmatised_words, lemmatised_dict
 
 
 def count_words(text: str, d: dict) -> dict:
@@ -69,7 +73,7 @@ def create_dict(wordlist: dict, threshold: float, size_df: int, blacklist: dict)
     wordlist = {k: v / size_df for k, v in wordlist.items()}
     dictionary = dict()
 
-    _, blacklist = text_normalizer(list_words=blacklist)
+    _, blacklist = text_normalizer(dict_words=blacklist)
 
     for value in wordlist.items():
         if value[1] > threshold and value[1] > 4 * blacklist.get(value[0], 0) / ARTICLE_BLACKLIST:
@@ -87,12 +91,12 @@ def score_attribution(article_dict: dict, gold_std: dict) -> float:
     return count
 
 
-def scaler(NewMin: float, NewMax: float, values: list, x: float):
+def scaler(newMin: float, newMax: float, values: list, x: float):
     min_ = min(values)
     max_ = max(values)
     result = 1
     if min_ != max_:
-        result = ((x - min_) * (NewMax - NewMin) / (max_ - min_) + NewMin)
+        result = ((x - min_) * (newMax - newMin) / (max_ - min_) + newMin)
     return result
 
 
