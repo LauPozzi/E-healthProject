@@ -34,7 +34,8 @@ def create_query(string):
     return final_query
 
 def query_search(string):
-    query = create_query(string)
+    query = string
+#    query = create_query(string)
     newString = query.replace(" ", "+")
     final_query = create_query(newString)
     # First search given the initial string
