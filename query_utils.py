@@ -27,10 +27,10 @@ def create_query(string):
                 sub_query.insert(idx, logics[int(logic_position[k])])
                 idx = idx + 2
             sub_query_str = ' '.join(sub_query)
-            final_query = final_query + ') or (' + sub_query_str
+            final_query = final_query + ' or (' + sub_query_str + ')'
             if z==0:
                 z=1
-                final_query = '(' + sub_query_str
+                final_query = '(' + sub_query_str + ')'
     return final_query
 
 def query_search(main_string, level_string):
@@ -63,4 +63,4 @@ def fetch(key, webenv, i, RETMAX):
 
 
 if __name__ == "__main__":
-    create_query("A B C")
+    print(create_query("A B C"))

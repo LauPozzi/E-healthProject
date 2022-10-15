@@ -6,5 +6,5 @@
     ```console
     git clone https://github.com/LauPozzi/E-healthProject.git
     cd E-healthProject
-    pip install -r requirements 
+    pip install -r requirements.txt 
     ```
