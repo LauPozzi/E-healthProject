@@ -1,12 +1,23 @@
 import requests
 from medline_utils import text_edit
-
 from itertools import permutations
+import re
+from sympy.logic.boolalg import to_cnf
+
+
+def compar_perm(str1: str, str2: str):
+    #la funzione compara due espressioni e dice se sono equivalenti a livello logico booleano
+    #TODO: usarla per controllare tutte le combinazioni create da create_query e per eliminare quelle ridondanti 
+    str1 = str1.replace("AND", "&").replace("OR", "|")
+    str2 = str2.replace("AND", "&").replace("OR", "|")
+
+    return str(to_cnf(str1)) == str(to_cnf(str2))
+
 
 
 def create_query(string):
     final_query = ''
-    logics = ['or', 'and']
+    logics = ['OR', 'AND']
 
     lis = list(string.split())
     n_operators=len(lis)-1
@@ -64,3 +75,4 @@ def fetch(key, webenv, i, RETMAX):
 
 if __name__ == "__main__":
     print(create_query("A B C"))
+    print(compar_perm('A AND B OR C', 'B AND A OR C'))
