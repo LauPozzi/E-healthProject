@@ -52,10 +52,12 @@ def extract_key(article_dict: dict, key: str):
         return article_dict.get(key)
 
 def extract_general(article_dict: dict, key: str):
-    description= extract_key(article_dict, key)
+    description = extract_key(article_dict, key)
     return description
 
 def extract_doi(article_dict: dict, key: str):
+    #TODO: rivedere perchè qualche volta non l'ha preso
+
     DOI_std = "https://doi.org/"
     doi = extract_key(article_dict, key)
     reg = re.compile(r"([A-Za-z0-9\.\/]+)\s*\[doi]")
@@ -88,6 +90,6 @@ def article_2_dict(article_dict: dict, data_dict: dict, level_string: str):
     data_dict['Keywords'].append(extract_general(article_dict, "OT")),
     data_dict['DOI'].append(extract_doi(article_dict, "AID")),
     data_dict['Abstract'].append(extract_general(article_dict, "AB"))
-    data_dict['Process level'].append(level_string)
+    data_dict['Topic of interest'].append(level_string)
 
     return data_dict

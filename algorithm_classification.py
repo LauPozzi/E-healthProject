@@ -121,9 +121,8 @@ def matching_articles(score: list, threshold: float):
     return matching
 
 
-def classification_alg():
+def classification_alg(df: pd.DataFrame):
     # Getting the dataframe of articles
-    df = main()
     df.fillna("None", inplace=True)
     wordlist_list_abs = [dict() for x in range(df.shape[0])]
     wordlist_list_ti = [dict() for x in range(df.shape[0])]
@@ -147,6 +146,7 @@ def classification_alg():
         wordlist_list_kw[i] = count_words_perarticle(df.iloc[i]['Keywords'])
 
     # Step2 - create a dictionary based on a threshold
+    #TODO: try with different thresholds
     threshold = 0.2
 
     dictionary_abstract = create_dict(wordlist_abstract, threshold, df.shape[0], blacklist)
@@ -177,11 +177,10 @@ def classification_alg():
     df['Match'] = matching
 
     print(df[['Article Title', 'Match']])
-
-    df.to_csv('export_dataframe_match.csv', index=False)
-
+    return df
 
 # TODO: confusion matrix
 
 if __name__ == '__main__':
     classification_alg()
+    print ("hello")
