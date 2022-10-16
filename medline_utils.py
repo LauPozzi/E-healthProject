@@ -60,7 +60,7 @@ def extract_doi(article_dict: dict, key: str):
 
     DOI_std = "https://doi.org/"
     doi = extract_key(article_dict, key)
-    reg = re.compile(r"([A-Za-z0-9\.\/]+)\s*\[doi]")
+    reg = re.compile(r"([A-Za-z0-9\.\/\-\(\)\_]+)\s*\[doi]")
 
     try:
         return DOI_std + reg.findall(doi)[0]
