@@ -5,3 +5,4 @@ proveLaura/
 __pycache__/
 *.csv
 ideas.txt
+*.csv#
