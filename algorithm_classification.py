@@ -173,11 +173,11 @@ def classification_alg(df: pd.DataFrame):
     # Step5 - scaled score > 0.09 --> classify as 1
     threshold = 0.09
     matching = matching_articles(score_final, threshold)
+    if len(matching) != 0:
+        df.loc[:, 'Match'] = matching
 
-    df.loc[:, 'Match'] = matching
-
-    print(df[['Article Title', 'Match']])
-    return df
+        print(df[['Article Title', 'Match']])
+        return df
 
 # TODO: confusion matrix
 

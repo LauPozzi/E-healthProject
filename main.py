@@ -11,9 +11,9 @@ from create_dictionary import word_counter
 
 def main():
     # user enters string
-    string_1 = enterbox("Please, enter a string for the research.", "Database Preparation")
-    string_2 = enterbox("Please, enter a string for the research.", "Database Preparation")
-    string_3 = enterbox("Please, enter a string for the research.", "Database Preparation")
+    string_1 = enterbox("The string must contain synonyms separated by ','", "Please, enter a string for the research.")
+    string_2 = enterbox("The string must contain synonyms separated by ','", "Please, enter a string for the research.")
+    string_3 = enterbox("The string must contain synonyms separated by ','", "Please, enter a string for the research.")
 
     if not string_1 :
         msgbox('No string inserted', 'Message', 'OK')
