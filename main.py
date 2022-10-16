@@ -68,7 +68,7 @@ def main():
 
     for point in bullet_points:
         df_selected = df.loc[df['Topic of interest'] == point]
-        df_classified = pd.concat([df_classified, classification_alg(df_selected)], ignore_index=True)
+        df_classified = pd.concat([df_classified, classification_alg(df_selected.iloc[:, :])], ignore_index=True)
         print(df_classified[['Article Title', 'Match']])
 
    #TODO: fix the 10 score that is suppose to be a 1

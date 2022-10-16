@@ -123,7 +123,7 @@ def matching_articles(score: list, threshold: float):
 
 def classification_alg(df: pd.DataFrame):
     # Getting the dataframe of articles
-    df.fillna("None", inplace=True)
+    df = df.fillna("None")
     wordlist_list_abs = [dict() for x in range(df.shape[0])]
     wordlist_list_ti = [dict() for x in range(df.shape[0])]
     wordlist_list_kw = [dict() for x in range(df.shape[0])]
@@ -174,7 +174,7 @@ def classification_alg(df: pd.DataFrame):
     threshold = 0.09
     matching = matching_articles(score_final, threshold)
 
-    df['Match'] = matching
+    df.loc[:, 'Match'] = matching
 
     print(df[['Article Title', 'Match']])
     return df
