@@ -1,5 +1,6 @@
 from collections import defaultdict, OrderedDict
 
+import numpy as np
 import pandas as pd
 from main import main
 import re
@@ -9,12 +10,24 @@ from easygui import msgbox
 ARTICLE_BLACKLIST = 11000
 
 
-def text_lemmatiser(text: str = '', dict_words: dict = {}) -> [list]:
+def text_lemmatiser(text: str = '', dict_words=None) -> [list]:
+    """
+    Perform text lemmatization on a string or a dictionary of words
+    :param text: a string containing the text
+    :type text: str
+    :param dict_words: a dictionary of words (strings)
+    :type dict_words: dict
+    :return: list of lemmatised words and dictionary of lemmatised words
+    :rtype: list[str] and dict
+    """
+    if dict_words is None:
+        dict_words = {}
+
     lemmatised_words = []
     lemmatised_dict = {}
     lancaster = LancasterStemmer()
 
-    if str:
+    if text:
         # Remove the leading spaces and newline character
         line = text.strip()
         # Convert the characters in line to lowercase to avoid case mismatch
@@ -82,8 +95,10 @@ def create_dict(wordlist: dict, threshold: float, size_df: int, blacklist: dict,
     if len(dictionary) != 0:
         return dictionary
     else:
-        msgbox("the threshold you have selected for {} is too high. Please select another threshold".format(string), "Error")
+        msgbox("the threshold you have selected for {} is too high. Please select another threshold".format(string),
+               "Error")
         exit()
+
 
 def score_attribution(article_dict: dict, gold_std: dict) -> float:
     count = 0
@@ -114,17 +129,11 @@ def compute_score(wordlist_list: list, dict_weights: dict):
 
 
 def matching_articles(score: list, threshold: float):
-    matching = list()
-    for x in score:
-        if x >= threshold:
-            matching.append(1)
-        else:
-            matching.append(0)
+    matching = list((np.array(score) >= threshold) * 1)
     return matching
 
 
 def order_and_select_words(dictionary, percentile):
-
     assert percentile <= 1.00
     assert percentile > 0.00
 
@@ -134,7 +143,7 @@ def order_and_select_words(dictionary, percentile):
     # selecting the first (percentile)% elements -> if no elements is included the percentile increases of 0.01
     elements = 0
     while elements < 1:
-        elements = int(percentile*len(dictionary))
+        elements = int(percentile * len(dictionary))
         percentile += 0.01
 
     while len(dictionary) > elements:
@@ -210,8 +219,9 @@ def classification_alg(df: pd.DataFrame):
         print(df[['Article Title', 'Match']])
         return df
 
+
 # TODO: confusion matrix
 
 if __name__ == '__main__':
     classification_alg()
-    print ("hello")
+    print("hello")
