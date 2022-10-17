@@ -1,17 +1,17 @@
-import math
-import time
-import pandas as pd
-from easygui import enterbox, msgbox, multenterbox
-from query_utils import *
-from medline_utils import concat_articles
 from algorithm_classification import *
+from easygui import multenterbox
+import math
+from medline_utils import concat_articles
+from query_utils import *
+
+RETMAX = 10000
 
 
 def main():
-    # user enters string
     # message to be displayed
-    text = 'The string must contain synonyms separated by a comma \nUse "" to force the search to look for combined ' \
-           'terms '
+    text = 'The string must contain synonyms separated by a comma \n\n' \
+           'Use "" to force the search to look for combined terms \n\n' \
+           'First search is mandatory '
 
     # window title
     title = "Research strings"
@@ -22,13 +22,15 @@ def main():
     # list of default text
     default_list = ['children, kids', '"attention disorder", adhd', '"serious game", game']
 
-    # creating a integer box
+    # creating a multiple enter box
     output = multenterbox(text, title, input_list, default_list)
 
+    # retrieving user's outputs
     string_1 = output[0]
     string_2 = output[1]
     string_3 = output[2]
 
+    # managing empty string case
     if not string_1:
         msgbox('No string inserted', 'Message', 'OK')
         exit()
@@ -41,6 +43,7 @@ def main():
 
     query_list = [string_1, string_2, string_3]
 
+    # initializing dictionary with articles specifics
     dic = {'Article Title': [],
            'Date': [],
            'Authors': [],
@@ -52,39 +55,40 @@ def main():
            'Topic of interest': []
            }
 
+    # initializing bullet points with different topics of interest
     bullet_points = ['treatment', 'applications enhancement', 'diagnosis support', 'screening tests']
 
+    # doing a specific fetch for each topic
     for point in bullet_points:
 
         key, webenv, count = search(query_list, point)
 
-        RETMAX = 10000
+        # defining how many chunks with 10000 articles each
         chunks = math.ceil(int(count) / RETMAX)
 
+        # cycling the fetch on each chunk, done in case there are more than 10000 articles for a single search
         for i in range(chunks):
 
+            # creating a list of strings with articles information
             articles = fetch(key, webenv, i, RETMAX)
 
-            start = time.time()
-
+            # for each element, extract information from the list and put it in a dictionary
             for article in articles:
                 dic = concat_articles(article, dic, point)
 
-            print(time.time() - start)
-
+    # creating dataframe from dictionary
     df = pd.DataFrame(dic)
 
-    df.to_csv('export_dataframe.csv', index=False)
-
+    # initializing an empty dataframe
     df_classified = pd.DataFrame()
 
+    # performing classification for each topic of interest separately
     for point in bullet_points:
         df_selected = df.loc[df['Topic of interest'] == point]
         df_classified = pd.concat([df_classified, classification_alg(df_selected.iloc[:, :])], ignore_index=True)
-        print(df_classified[['Article Title', 'Match']])
 
+    # saving csv file
     df_classified.to_csv('export_dataframe_match.csv', index=False)
-    return df
 
 
 if __name__ == '__main__':

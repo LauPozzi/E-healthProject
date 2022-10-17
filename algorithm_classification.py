@@ -149,7 +149,7 @@ def classification_alg(df: pd.DataFrame):
 
     # Step2 - create a dictionary based on a threshold
     #TODO: try with different thresholds
-    threshold_dict_abs = 3.79
+    threshold_dict_abs = 0.2
     threshold_dict_ti = 0.4
     threshold_dict_kw = 0.24
 
