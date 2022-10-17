@@ -1,16 +1,14 @@
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 import pandas as pd
 from main import main
 import re
 from nltk.stem import LancasterStemmer
-from easygui import msgbox
 
 ARTICLE_BLACKLIST = 11000
 
 
 def text_lemmatiser(text: str = '', dict_words: dict = {}) -> [list]:
-
     lemmatised_words = []
     lemmatised_dict = {}
     lancaster = LancasterStemmer()
@@ -82,7 +80,6 @@ def create_dict(wordlist: dict, threshold: float, size_df: int, blacklist: dict)
     return dictionary
 
 
-
 def score_attribution(article_dict: dict, gold_std: dict) -> float:
     """
     Count the number of word present in the gold standard and compute the related score
@@ -147,12 +144,32 @@ def matching_articles(score: list, threshold: float) -> list:
     return matching
 
 
+def order_and_select_words(dictionary, percentile):
+    assert percentile <= 1.00
+    assert percentile > 0.00
+
+    # ordering dictionary by value
+    dictionary = OrderedDict({k: v for k, v in sorted(dictionary.items(), key=lambda item: item[1], reverse=True)})
+
+    # selecting the first (percentile)% elements -> if no elements is included the percentile increases of 0.01
+    elements = 0
+    while elements < 1:
+        elements = int(percentile * len(dictionary))
+        percentile += 0.01
+
+    while len(dictionary) > elements:
+        dictionary.popitem(last=True)
+
+    return dictionary
+
+
 def classification_alg(df: pd.DataFrame) -> pd.DataFrame:
     """
     Perform articles classification based on a modified version of https://doi.org/10.1093/ehjci/ehaa946.3555
     :param df: original dataframe
     :return: pandas dataframe with matching column
     """
+
     df = df.fillna("None")
     wordlist_list_abs = [dict() for x in range(df.shape[0])]
     wordlist_list_ti = [dict() for x in range(df.shape[0])]
@@ -175,14 +192,21 @@ def classification_alg(df: pd.DataFrame) -> pd.DataFrame:
         wordlist_list_kw[i] = count_words(df.iloc[i]['Keywords'])
 
     # Step2 - create a dictionary based on a threshold
-    # TODO: try with different thresholds
-    threshold_dict_abs = 3.79
-    threshold_dict_ti = 0.4
-    threshold_dict_kw = 0.24
+    threshold_dict_abs = 0.0
+    threshold_dict_ti = 0.0
+    threshold_dict_kw = 0.0
 
     dictionary_abstract = create_dict(wordlist_abstract, threshold_dict_abs, df.shape[0], blacklist)
     dictionary_title = create_dict(wordlist_title, threshold_dict_ti, df.shape[0], blacklist)
     dictionary_keywords = create_dict(wordlist_keywords, threshold_dict_kw, df.shape[0], blacklist)
+
+    # Step2.1 - extract first x-th percentile of words
+    percentile_abstract = 0.01
+    percentile_title = 0.05
+    percentile_keywords = 0.05
+    dictionary_abstract = order_and_select_words(dictionary=dictionary_abstract, percentile=percentile_abstract)
+    dictionary_title = order_and_select_words(dictionary=dictionary_title, percentile=percentile_title)
+    dictionary_keywords = order_and_select_words(dictionary=dictionary_keywords, percentile=percentile_keywords)
 
     # Step3 - scale the occurrences of the words in the dictionary in [0.06, 1]
 
