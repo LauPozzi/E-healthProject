@@ -5,32 +5,28 @@ from easygui import enterbox, msgbox
 from query_utils import *
 from medline_utils import concat_articles
 from algorithm_classification import *
-from create_dictionary import word_counter
-
 
 
 def main():
     # user enters string
-    #string_1 = enterbox("The string must contain synonyms separated by ','", "Please, enter a string for the research.")
-    #string_2 = enterbox("The string must contain synonyms separated by ','", "Please, enter a string for the research.")
-    #string_3 = enterbox("The string must contain synonyms separated by ','", "Please, enter a string for the research.")
-    string_1='children, kids'
-    string_2='"attention disorder", adhd'
-    string_3='"serious game", game'
+    # string_1 = enterbox("The string must contain synonyms separated by ','", "Please, enter a string for the research.")
+    # string_2 = enterbox("The string must contain synonyms separated by ','", "Please, enter a string for the research.")
+    # string_3 = enterbox("The string must contain synonyms separated by ','", "Please, enter a string for the research.")
+    string_1 = 'children, kids'
+    string_2 = '"attention disorder", adhd'
+    string_3 = '"serious game", game'
 
-    if not string_1 :
+    if not string_1:
         msgbox('No string inserted', 'Message', 'OK')
         exit()
-    if not string_2 :
+    if not string_2:
         msgbox('No string inserted', 'Message', 'OK')
         exit()
     if not string_3:
         msgbox('No string inserted', 'Message', 'OK')
         exit()
 
-    query_list = [string_1,string_2,string_3]
-
-
+    query_list = [string_1, string_2, string_3]
 
     dic = {'Article Title': [],
            'Date': [],
@@ -61,7 +57,7 @@ def main():
             for article in articles:
                 dic = concat_articles(article, dic, point)
 
-            print(time.time()-start)
+            print(time.time() - start)
 
     df = pd.DataFrame(dic)
 
@@ -73,8 +69,6 @@ def main():
         df_selected = df.loc[df['Topic of interest'] == point]
         df_classified = pd.concat([df_classified, classification_alg(df_selected.iloc[:, :])], ignore_index=True)
         print(df_classified[['Article Title', 'Match']])
-
-   #TODO: fix the 10 score that is suppose to be a 1
 
     df_classified.to_csv('export_dataframe_match.csv', index=False)
     return df

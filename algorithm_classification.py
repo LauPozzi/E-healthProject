@@ -8,8 +8,7 @@ from nltk.stem import LancasterStemmer
 ARTICLE_BLACKLIST = 11000
 
 
-# TODO: trovare un nome migliore
-def text_normalizer(text: str = '', dict_words: dict = {}) -> [list]:
+def text_lemmatiser(text: str = '', dict_words: dict = {}) -> [list]:
     lemmatised_words = []
     lemmatised_dict = {}
     lancaster = LancasterStemmer()
@@ -38,7 +37,7 @@ def text_normalizer(text: str = '', dict_words: dict = {}) -> [list]:
 
 
 def count_words(text: str, d: dict) -> dict:
-    words, _ = text_normalizer(text=text)
+    words, _ = text_lemmatiser(text=text)
 
     # Iterate over each word in line
     for word in words:
@@ -55,7 +54,7 @@ def count_words(text: str, d: dict) -> dict:
 def count_words_perarticle(text: str) -> dict:
     d = dict()
 
-    words, _ = text_normalizer(text=text)
+    words, _ = text_lemmatiser(text=text)
 
     # Iterate over each word in line
     for word in words:
@@ -73,7 +72,7 @@ def create_dict(wordlist: dict, threshold: float, size_df: int, blacklist: dict)
     wordlist = {k: v / size_df for k, v in wordlist.items()}
     dictionary = dict()
 
-    _, blacklist = text_normalizer(dict_words=blacklist)
+    _, blacklist = text_lemmatiser(dict_words=blacklist)
 
     for value in wordlist.items():
         if value[1] > threshold and value[1] > 4 * blacklist.get(value[0], 0) / ARTICLE_BLACKLIST:
