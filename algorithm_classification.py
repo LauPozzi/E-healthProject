@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 import pandas as pd
 from main import main
@@ -123,6 +123,26 @@ def matching_articles(score: list, threshold: float):
     return matching
 
 
+def order_and_select_words(dictionary, percentile):
+
+    assert percentile <= 1.00
+    assert percentile > 0.00
+
+    # ordering dictionary by value
+    dictionary = OrderedDict({k: v for k, v in sorted(dictionary.items(), key=lambda item: item[1], reverse=True)})
+
+    # selecting the first (percentile)% elements -> if no elements is included the percentile increases of 0.01
+    elements = 0
+    while elements < 1:
+        elements = int(percentile*len(dictionary))
+        percentile += 0.01
+
+    while len(dictionary) > elements:
+        dictionary.popitem(last=True)
+
+    return dictionary
+
+
 def classification_alg(df: pd.DataFrame):
     # Getting the dataframe of articles
     df = df.fillna("None")
@@ -148,14 +168,22 @@ def classification_alg(df: pd.DataFrame):
         wordlist_list_kw[i] = count_words_perarticle(df.iloc[i]['Keywords'])
 
     # Step2 - create a dictionary based on a threshold
-    #TODO: try with different thresholds
-    threshold_dict_abs = 3.79
-    threshold_dict_ti = 0.4
-    threshold_dict_kw = 0.24
+
+    threshold_dict_abs = 0.0
+    threshold_dict_ti = 0.0
+    threshold_dict_kw = 0.0
 
     dictionary_abstract = create_dict(wordlist_abstract, threshold_dict_abs, df.shape[0], blacklist, "abstract")
     dictionary_title = create_dict(wordlist_title, threshold_dict_ti, df.shape[0], blacklist, "title")
     dictionary_keywords = create_dict(wordlist_keywords, threshold_dict_kw, df.shape[0], blacklist, "keywords")
+
+    # Step2.1 - extract first x-th percentile of words
+    percentile_abstract = 0.05
+    percentile_title = 0.05
+    percentile_keywords = 0.05
+    dictionary_abstract = order_and_select_words(dictionary=dictionary_abstract, percentile=percentile_abstract)
+    dictionary_title = order_and_select_words(dictionary=dictionary_title, percentile=percentile_title)
+    dictionary_keywords = order_and_select_words(dictionary=dictionary_keywords, percentile=percentile_keywords)
 
     # Step3 - scale the occurrences of the words in the dictionary in [0.06, 1]
 
