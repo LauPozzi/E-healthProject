@@ -4,6 +4,7 @@ import pandas as pd
 from main import main
 import re
 from nltk.stem import LancasterStemmer
+from easygui import msgbox
 
 ARTICLE_BLACKLIST = 11000
 
@@ -69,7 +70,7 @@ def count_words_perarticle(text: str) -> dict:
     return d
 
 
-def create_dict(wordlist: dict, threshold: float, size_df: int, blacklist: dict):
+def create_dict(wordlist: dict, threshold: float, size_df: int, blacklist: dict, string: str):
     wordlist = {k: v / size_df for k, v in wordlist.items()}
     dictionary = dict()
 
@@ -79,9 +80,11 @@ def create_dict(wordlist: dict, threshold: float, size_df: int, blacklist: dict)
         if value[1] > threshold and value[1] > 4 * blacklist.get(value[0], 0) / ARTICLE_BLACKLIST:
             dictionary[value[0]] = value[1]
 
-    print(dictionary)
-    return dictionary
-
+    if len(dictionary) != 0:
+        return dictionary
+    else:
+        msgbox("the threshold you have selected for {} is too high. Please select another threshold".format(string), "Error")
+        exit()
 
 def score_attribution(article_dict: dict, gold_std: dict) -> float:
     count = 0
@@ -151,9 +154,9 @@ def classification_alg(df: pd.DataFrame):
     threshold_dict_ti = 0.4
     threshold_dict_kw = 0.24
 
-    dictionary_abstract = create_dict(wordlist_abstract, threshold_dict_abs, df.shape[0], blacklist)
-    dictionary_title = create_dict(wordlist_title, threshold_dict_ti, df.shape[0], blacklist)
-    dictionary_keywords = create_dict(wordlist_keywords, threshold_dict_kw, df.shape[0], blacklist)
+    dictionary_abstract = create_dict(wordlist_abstract, threshold_dict_abs, df.shape[0], blacklist, "abstract")
+    dictionary_title = create_dict(wordlist_title, threshold_dict_ti, df.shape[0], blacklist, "title")
+    dictionary_keywords = create_dict(wordlist_keywords, threshold_dict_kw, df.shape[0], blacklist, "keywords")
 
     # Step3 - scale the occurrences of the words in the dictionary in [0.06, 1]
 
