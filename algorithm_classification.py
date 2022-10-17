@@ -147,11 +147,13 @@ def classification_alg(df: pd.DataFrame):
 
     # Step2 - create a dictionary based on a threshold
     #TODO: try with different thresholds
-    threshold = 0.2
+    threshold_dict_abs = 3.79
+    threshold_dict_ti = 0.4
+    threshold_dict_kw = 0.24
 
-    dictionary_abstract = create_dict(wordlist_abstract, threshold, df.shape[0], blacklist)
-    dictionary_title = create_dict(wordlist_title, threshold, df.shape[0], blacklist)
-    dictionary_keywords = create_dict(wordlist_keywords, threshold, df.shape[0], blacklist)
+    dictionary_abstract = create_dict(wordlist_abstract, threshold_dict_abs, df.shape[0], blacklist)
+    dictionary_title = create_dict(wordlist_title, threshold_dict_ti, df.shape[0], blacklist)
+    dictionary_keywords = create_dict(wordlist_keywords, threshold_dict_kw, df.shape[0], blacklist)
 
     # Step3 - scale the occurrences of the words in the dictionary in [0.06, 1]
 
