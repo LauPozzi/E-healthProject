@@ -1,5 +1,6 @@
 from collections import defaultdict, OrderedDict
 
+import numpy as np
 import pandas as pd
 from main import main
 import re
@@ -8,12 +9,24 @@ from nltk.stem import LancasterStemmer
 ARTICLE_BLACKLIST = 11000
 
 
-def text_lemmatiser(text: str = '', dict_words: dict = {}) -> [list]:
+def text_lemmatiser(text: str = '', dict_words=None) -> [list]:
+    """
+    Perform text lemmatization on a string or a dictionary of words
+    :param text: a string containing the text
+    :type text: str
+    :param dict_words: a dictionary of words (strings)
+    :type dict_words: dict
+    :return: list of lemmatised words and dictionary of lemmatised words
+    :rtype: list[str] and dict
+    """
+    if dict_words is None:
+        dict_words = {}
+
     lemmatised_words = []
     lemmatised_dict = {}
     lancaster = LancasterStemmer()
 
-    if str:
+    if text:
         # Remove the leading spaces and newline character
         line = text.strip()
         # Convert the characters in line to lowercase to avoid case mismatch
@@ -80,6 +93,7 @@ def create_dict(wordlist: dict, threshold: float, size_df: int, blacklist: dict)
     return dictionary
 
 
+
 def score_attribution(article_dict: dict, gold_std: dict) -> float:
     """
     Count the number of word present in the gold standard and compute the related score
@@ -135,12 +149,7 @@ def matching_articles(score: list, threshold: float) -> list:
     :param threshold: number beyond which articles are classified as matching
     :return: classification list
     """
-    matching = list()
-    for x in score:
-        if x >= threshold:
-            matching.append(1)
-        else:
-            matching.append(0)
+    matching = list((np.array(score) >= threshold) * 1)
     return matching
 
 
