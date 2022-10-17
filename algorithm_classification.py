@@ -1,8 +1,6 @@
 from collections import defaultdict, OrderedDict
-
 import numpy as np
 import pandas as pd
-from main import main
 import re
 from nltk.stem import LancasterStemmer
 
