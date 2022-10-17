@@ -14,7 +14,8 @@ def search(query_list: list, level_string):
             i = 1
             query = '(' + box + ')'
 
-    final_query = query + ' AND ' + level_string
+    final_query = '('+'('+query +')'+' OR ' + '('+ '('+query_list[0].replace(",", " OR")+')'+' AND '+ '('+query_list[1].replace(",", " OR")+')'+')'+ ' OR ' + '('+ '('+query_list[0].replace(",", " OR")+')' +' AND '+'('+query_list[2].replace(",", " OR")+')'+')'+') AND ' + level_string
+    print("Final query: ", final_query)
     newString = final_query.replace(" ", "+")
 
     # First search given the initial string
@@ -42,5 +43,5 @@ def fetch(key, webenv, i, RETMAX):
 
 
 if __name__ == "__main__":
-    query = ["kids, children", "adhd, attention"]
+    query = ["serious game, game", "kids, children", "adhd, attention"]
     print(search(query, 'treatment'))

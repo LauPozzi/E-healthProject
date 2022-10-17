@@ -168,7 +168,6 @@ def classification_alg(df: pd.DataFrame):
         wordlist_list_kw[i] = count_words_perarticle(df.iloc[i]['Keywords'])
 
     # Step2 - create a dictionary based on a threshold
-
     threshold_dict_abs = 0.0
     threshold_dict_ti = 0.0
     threshold_dict_kw = 0.0
