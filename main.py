@@ -89,7 +89,7 @@ def main():
 
     # saving csv file
     df_classified.to_csv('export_dataframe_match.csv', index=False)
-
+    print(sum(df_classified['Match']))
 
 if __name__ == '__main__':
     main()

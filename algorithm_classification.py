@@ -82,14 +82,14 @@ def count_words_perarticle(text: str) -> dict:
     return d
 
 
-def create_dict(wordlist: dict, threshold: float, size_df: int, blacklist: dict, string: str):
+def filter_dict(wordlist: dict, size_df: int, general_dictionary: dict, string: str):
     wordlist = {k: v / size_df for k, v in wordlist.items()}
     dictionary = dict()
 
-    _, blacklist = text_lemmatiser(dict_words=blacklist)
+    _, general_dictionary = text_lemmatiser(dict_words=general_dictionary)
 
     for value in wordlist.items():
-        if value[1] > threshold and value[1] > 4 * blacklist.get(value[0], 0) / ARTICLE_BLACKLIST:
+        if value[1] > 4 * general_dictionary.get(value[0], 0) / ARTICLE_BLACKLIST:
             dictionary[value[0]] = value[1]
 
     if len(dictionary) != 0:
@@ -134,6 +134,15 @@ def matching_articles(score: list, threshold: float):
 
 
 def order_and_select_words(dictionary, percentile):
+    """
+    Order the words in a python dictionary based on the value of the key-value pairs
+    :param dictionary: dictionary of "string" : value
+    :type dictionary: dict
+    :param percentile: the first x-th percentile of words will be selected. Percentile in range [0 1]
+    :type percentile: float
+    :return: ordered dictionary with only the first percentile% of elements
+    :rtype: dict
+    """
     assert percentile <= 1.00
     assert percentile > 0.00
 
@@ -161,8 +170,8 @@ def classification_alg(df: pd.DataFrame):
 
     # Step1 - count occurrences of all words (minus black list)
 
-    blacklist_df = pd.read_excel('blacklist_dict.xlsx', engine='openpyxl')
-    blacklist = dict(blacklist_df.values)
+    general_dictionary = pd.read_excel('blacklist_dict.xlsx', engine='openpyxl')
+    general_dictionary = dict(general_dictionary.values)
 
     wordlist_abstract = dict()
     wordlist_title = dict()
@@ -176,19 +185,15 @@ def classification_alg(df: pd.DataFrame):
         wordlist_list_ti[i] = count_words_perarticle(df.iloc[i]['Article Title'])
         wordlist_list_kw[i] = count_words_perarticle(df.iloc[i]['Keywords'])
 
-    # Step2 - create a dictionary based on a threshold
-    threshold_dict_abs = 0.0
-    threshold_dict_ti = 0.0
-    threshold_dict_kw = 0.0
-
-    dictionary_abstract = create_dict(wordlist_abstract, threshold_dict_abs, df.shape[0], blacklist, "abstract")
-    dictionary_title = create_dict(wordlist_title, threshold_dict_ti, df.shape[0], blacklist, "title")
-    dictionary_keywords = create_dict(wordlist_keywords, threshold_dict_kw, df.shape[0], blacklist, "keywords")
+    # Step2 - create a dictionary based on generic dictionary
+    dictionary_abstract = filter_dict(wordlist_abstract, df.shape[0], general_dictionary, "abstract")
+    dictionary_title = filter_dict(wordlist_title, df.shape[0], general_dictionary, "title")
+    dictionary_keywords = filter_dict(wordlist_keywords, df.shape[0], general_dictionary, "keywords")
 
     # Step2.1 - extract first x-th percentile of words
-    percentile_abstract = 0.05
-    percentile_title = 0.05
-    percentile_keywords = 0.05
+    percentile_abstract = 0.005
+    percentile_title = 0.01
+    percentile_keywords = 0.01
     dictionary_abstract = order_and_select_words(dictionary=dictionary_abstract, percentile=percentile_abstract)
     dictionary_title = order_and_select_words(dictionary=dictionary_title, percentile=percentile_title)
     dictionary_keywords = order_and_select_words(dictionary=dictionary_keywords, percentile=percentile_keywords)
