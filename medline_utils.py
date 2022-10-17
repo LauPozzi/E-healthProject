@@ -1,4 +1,4 @@
-import re  # libreria regular expression
+import re
 import collections
 import pandas as pd
 
@@ -102,15 +102,15 @@ def extract_doi(article_dict: dict, key: str):
     except (TypeError, IndexError) as e:
         return doi
 
+
 def article_2_dict(article_dict: dict, data_dict: dict, level_string: str) -> dict:
     """
-    The function fill the pre-defined dictionary data_dict with the corresponding information of each article
-    in article_dict
-
-    :param article_dict:
-    :param data_dict:
-    :param level_string:
-    :return:
+    The function takes in input a pre-defined dictionary and a list containing a single article information; it appends
+    to each element of the dictionary a new element extracted from the article list
+    :param article_dict: dictionary containing a single article information
+    :param data_dict: dictionary containing past articles information
+    :param level_string: string expressing the topic of interest
+    :return: returns data_dict with additional information from the article in input
     """
     data_dict['Article Title'].append(extract_general(article_dict, "TI")),
     data_dict['Date'].append(extract_general(article_dict, "DP")),
@@ -123,20 +123,19 @@ def article_2_dict(article_dict: dict, data_dict: dict, level_string: str) -> di
     data_dict['Topic of interest'].append(level_string)
 
     return data_dict
-def concat_articles(article: list, dic: dict, level_string: str) -> dict:
-    """
-    The function modifies the dictionary dic in input adding the information form the article in input
 
-    :param article: list of
-    :param dic:
-    :param level_string:
-    :return:
+
+def concat_articles(article: str, dic: dict, level_string: str) -> dict:
+    """
+    The function processes the article as follows, modifies, and returns the dictionary in input adding the information
+    from the article in input
+    :param article: string containing articles information
+    :param dic: dictionary containing past articles information
+    :param level_string: string expressing topic of interest
+    :return: dictionary containing past articles information and new article information
     """
     article_tuple = article_division(article)
     article_small = header_selection(article_tuple)
     article_dict = tuple_2_dict(article_small)
     dic = article_2_dict(article_dict, dic, level_string)
     return dic
-
-
-
