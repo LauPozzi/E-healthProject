@@ -20,7 +20,7 @@ def main():
     input_list = ["First search", "Second search", "Third search"]
 
     # list of default text
-    default_list = ['"serious game", game', 'children, kids', '"attention disorder", adhd']
+    default_list = ['serious game', 'children, kids', 'attention disorder, adhd']
 
     # creating a multiple enter box
     output = multenterbox(text, title, input_list, default_list)
