@@ -20,7 +20,7 @@ def main():
     input_list = ["First search", "Second search", "Third search"]
 
     # list of default text
-    default_list = ['children, kids', '"attention disorder", adhd', '"serious game", game']
+    default_list = ['"serious game", game', 'children, kids', '"attention disorder", adhd']
 
     # creating a multiple enter box
     output = multenterbox(text, title, input_list, default_list)
@@ -56,7 +56,7 @@ def main():
            }
 
     # initializing bullet points with different topics of interest
-    bullet_points = ['treatment', 'applications enhancement', 'diagnosis support', 'screening tests']
+    bullet_points = ['treatment', 'cognitive enhancement', 'diagnosis support', 'screening tests']
 
     # doing a specific fetch for each topic
     for point in bullet_points:
