@@ -1,7 +1,7 @@
 import math
 import time
 import pandas as pd
-from easygui import enterbox, msgbox
+from easygui import enterbox, msgbox, multenterbox
 from query_utils import *
 from medline_utils import concat_articles
 from algorithm_classification import *
@@ -9,12 +9,25 @@ from algorithm_classification import *
 
 def main():
     # user enters string
-    # string_1 = enterbox("The string must contain synonyms separated by ','", "Please, enter a string for the research.")
-    # string_2 = enterbox("The string must contain synonyms separated by ','", "Please, enter a string for the research.")
-    # string_3 = enterbox("The string must contain synonyms separated by ','", "Please, enter a string for the research.")
-    string_1 = 'children, kids'
-    string_2 = '"attention disorder", adhd'
-    string_3 = '"serious game", game'
+    # message to be displayed
+    text = 'The string must contain synonyms separated by a comma \nUse "" to force the search to look for combined ' \
+           'terms '
+
+    # window title
+    title = "Research strings"
+
+    # list of multiple inputs
+    input_list = ["First search", "Second search", "Third search"]
+
+    # list of default text
+    default_list = ['children, kids', '"attention disorder", adhd', '"serious game", game']
+
+    # creating a integer box
+    output = multenterbox(text, title, input_list, default_list)
+
+    string_1 = output[0]
+    string_2 = output[1]
+    string_3 = output[2]
 
     if not string_1:
         msgbox('No string inserted', 'Message', 'OK')
