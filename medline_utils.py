@@ -89,9 +89,9 @@ def extract_doi(article_dict: dict, key: str):
     """
     The function, given the dictionary of an article and a key, extracts the corresponding DOI combining the description
     in the dict and the domain
-    :param article_dict:
-    :param key:
-    :return: article doi
+    :param article_dict: dictionary of an article
+    :param key: doi key
+    :return: article doi 
     """
     DOI_std = "https://doi.org/"
     doi = extract_key(article_dict, key)
@@ -104,17 +104,13 @@ def extract_doi(article_dict: dict, key: str):
 
 def article_2_dict(article_dict: dict, data_dict: dict, level_string: str) -> dict:
     """
-    The function fill the pre-defined dictionary in the main with the corresponding information of each article
+    The function fill the pre-defined dictionary data_dict with the corresponding information of each article
     in article_dict
 
-    :param level_string:
-    :type level_string:
-    :param data_dict:
-    :type data_dict:
     :param article_dict:
-    :type article_dict:
+    :param data_dict:
+    :param level_string:
     :return:
-    :rtype:
     """
     data_dict['Article Title'].append(extract_general(article_dict, "TI")),
     data_dict['Date'].append(extract_general(article_dict, "DP")),
@@ -129,7 +125,7 @@ def article_2_dict(article_dict: dict, data_dict: dict, level_string: str) -> di
     return data_dict
 def concat_articles(article: list, dic: dict, level_string: str) -> dict:
     """
-    The function modifies the dictionary dic in input adding for each
+    The function modifies the dictionary dic in input adding the information form the article in input
 
     :param article: list of
     :param dic:
