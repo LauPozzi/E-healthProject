@@ -91,7 +91,7 @@ def extract_doi(article_dict: dict, key: str):
     in the dict and the domain
     :param article_dict: dictionary of an article
     :param key: doi key
-    :return: article doi 
+    :return: article doi
     """
     DOI_std = "https://doi.org/"
     doi = extract_key(article_dict, key)
