@@ -250,10 +250,8 @@ def classification_alg(df: pd.DataFrame) -> pd.DataFrame:
         df.loc[:, 'Match'] = matching
 
         print(df[['Article Title', 'Match']])
-        return df
+    return df
 
-
-# TODO: confusion matrix
 
 if __name__ == '__main__':
     classification_alg()
