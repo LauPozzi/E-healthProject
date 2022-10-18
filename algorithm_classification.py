@@ -131,13 +131,10 @@ def compute_score(wordlist_list: list, dict_weights: dict) -> list:
     :return: list of normalized score
     """
     score = list()
-    score_norm = list()
     for d in wordlist_list:
         score.append(score_attribution(d, dict_weights))
 
-    for x in score:
-        score_norm.append(scaler(0, 1, score, x))
-    return score_norm
+    return score
 
 
 def matching_articles(score: list, threshold: float) -> list:
@@ -241,9 +238,10 @@ def classification_alg(df: pd.DataFrame) -> pd.DataFrame:
     score_kw = compute_score(wordlist_list_kw, dict_weights_keywords)
 
     score_final = list(map(lambda abstract, ti, kw: abstract + 5 * ti + 5 * kw, score_abs, score_ti, score_kw))
+    score_final = list(map(lambda s: scaler(0, 1, score_final, s), score_final))
 
     # Step5 - scaled score > 0.09 --> classify as 1
-    threshold = 0.09
+    threshold = 0.17735435435435434
     matching = matching_articles(score_final, threshold)
     if len(matching) != 0:
         df.loc[:, 'Score'] = score_final
@@ -251,8 +249,3 @@ def classification_alg(df: pd.DataFrame) -> pd.DataFrame:
 
         print(df[['Article Title', 'Match']])
     return df
-
-
-if __name__ == '__main__':
-    classification_alg()
-    print("hello")
