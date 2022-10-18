@@ -112,6 +112,23 @@ def get_auc(gold_standard: pd.DataFrame, alg_scoring_val: pd.DataFrame, alg_scor
     print("Specificity with the set THRESHOLD of ", round(THRESHOLD, 4), "): ", round(SPECs_test[index], 4))
     print("Sensitivity with the set THRESHOLD of ", round(THRESHOLD, 4), "): ", round(TPRs_test[index], 4))
 
+    if graph:
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+        fig.suptitle('ROC Curve')
+        fig.tight_layout(pad=3.0)
+        ax1.plot(FPRs_val, TPRs_val)
+        random_evaluator = np.linspace(0, 1, 100)
+        ax1.plot(random_evaluator, random_evaluator, '-.')
+        ax1.set(xlabel='False Positive Rate', ylabel='True Positive Rate')
+        ax1.relim([0.0, 1.0])
+        ax1.relim([0.0, 1.0])
+        ax2.plot(FPRs_test, TPRs_test)
+        ax2.plot(random_evaluator, random_evaluator, '-.')
+        ax2.set(xlabel='False Positive Rate', ylabel='True Positive Rate')
+        ax2.relim([0.0, 1.0])
+        ax2.relim([0.0, 1.0])
+        plt.show()
+
 
 if __name__ == '__main__':
     gold_std = pd.read_csv("gold_standard.csv")
