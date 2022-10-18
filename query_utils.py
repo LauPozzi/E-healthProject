@@ -21,11 +21,6 @@ def search(query_list: list, level_string: str) -> [str]:
             i = 1
             search_query = '(' + box + ')'
 
-    #final_query = '(' + '(' + search_query + ')' + ' OR ' + '(' + '(' + query_list[0].replace(",", " OR") + ')' \
-    #               + ' AND ' + '(' + query_list[1].replace(",", " OR") + ')' + ')' + ' OR ' + '(' + '(' \
-    #               + query_list[0].replace(",", " OR") + ')' + ' AND ' + '(' + query_list[2].replace(",", " OR") \
-    #               + ')' + ')' + ') AND ' + level_string
-
     final_query = '('+ search_query + ')' + ' AND ' + level_string
     print(final_query)
     new_string = final_query.replace(" ", "+")

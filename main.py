@@ -88,7 +88,7 @@ def main():
         df_classified = pd.concat([df_classified, classification_alg(df_selected.iloc[:, :])], ignore_index=True)
 
     # saving csv file
-    df_classified.to_csv('3_Group09_PartI_Database.csv', index=False)
+    df_classified.to_csv('New_Database.csv', index=False)
 
 
 if __name__ == '__main__':
