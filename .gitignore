@@ -6,3 +6,4 @@ __pycache__/
 *.csv
 ideas.txt
 *.csv#
+!gold_standard.csv
