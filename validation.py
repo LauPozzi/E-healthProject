@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 import seaborn as sn
 
 #TODO: documentation
-def get_auc(gold_standard: pd.DataFrame, alg_scoring: pd.DataFrame, graph=True):
-    if not gold_standard.shape[0] == alg_scoring.shape[0]:
+def get_auc(gold_standard: pd.DataFrame, alg_scoring_val: pd.DataFrame, graph=True):
+    if not gold_standard.shape[0] == alg_scoring_val.shape[0]:
         raise Exception("Dataframes are not of the same length. Check your inputs")
 
-    algorithm_scores = list(alg_scoring['Score'])
+    algorithm_scores = list(alg_scoring_val['Score'])
     manual_classifications = list(gold_standard['Manual Classification'])
 
     FPRs = []
@@ -79,7 +79,52 @@ def get_auc(gold_standard: pd.DataFrame, alg_scoring: pd.DataFrame, graph=True):
     return ACCs, TPRs, FPRs, SPECs, thresholds, CMs
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
     gold_std = pd.read_csv("gold_standard.csv")
-    alg_scores = pd.read_csv("validation_dataframe.csv")
-    get_auc(gold_std, alg_scores)
+    alg_scores_val = pd.read_csv("validation_dataframe.csv")
+    alg_scores_test = pd.read_csv("3_Group09_PartI_Database.csv")
+
+    get_auc(gold_std, alg_scores_val, alg_scores_test)

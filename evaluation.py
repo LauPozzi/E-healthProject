@@ -151,6 +151,20 @@ def get_auc(gold_standard: pd.DataFrame, alg_scoring_val: pd.DataFrame, alg_scor
         ax2.relim([0.0, 1.0])
         plt.show()
 
+        fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+        fig.suptitle('Confusion Matrix')
+        fig.tight_layout(pad=3.0)
+        sn.heatmap(CMs_val[index_val], annot=True, annot_kws={"size": 16}, cbar=False, cmap='RdYlGn', ax=ax1)
+        ax1.set(xlabel='Algorithm classification', ylabel='Ground truth')
+        ax1.set_title('Validation DB')
+        sn.heatmap(CMs_test[index_test], annot=True, annot_kws={"size": 16}, cbar=False, cmap='RdYlGn', ax=ax2)
+        ax2.set(xlabel='Algorithm classification', ylabel='Ground truth')
+        ax2.set_title('Test DB')
+        sn.heatmap(CMs_test[index_val], annot=True, annot_kws={"size": 16}, cbar=False, cmap='RdYlGn', ax=ax3)
+        ax3.set(xlabel='Algorithm classification', ylabel='Ground truth')
+        ax3.set_title('Test DB with\nvalidated threshold')
+        plt.show()
+
 
 if __name__ == '__main__':
     gold_std = pd.read_csv("gold_standard.csv")
