@@ -169,7 +169,7 @@ def order_and_select_words(dictionary, percentile):
 
     # selecting the first (percentile)% elements -> if no elements is included the percentile increases of 0.01
     elements = 0
-    while elements < 1:
+    while elements < 1 and percentile <= 1.00:
         elements = int(percentile * len(dictionary))
         percentile += 0.01
 
