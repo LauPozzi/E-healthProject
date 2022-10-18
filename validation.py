@@ -39,7 +39,7 @@ def get_auc(gold_standard: pd.DataFrame, alg_scoring: pd.DataFrame, graph=True):
         ACCs.append(ACC)
 
     print("The AUC score is: ", round(auc(FPRs, TPRs), 4))
-    print("Best accuracy of ", round(max(ACCs), 4), " with threshold of ", round(thresholds[ACCs.index(max(ACCs))], 4))
+    print("Best accuracy of ", round(max(ACCs), 4), " with THRESHOLD of ", round(thresholds[ACCs.index(max(ACCs))], 4))
 
     if graph:
         plt.figure()
@@ -64,6 +64,8 @@ def get_auc(gold_standard: pd.DataFrame, alg_scoring: pd.DataFrame, graph=True):
         plt.xlim([0.0, 1.0])
         plt.ylim([0.0, 1.0])
         plt.show()
+
+    return ACCs, TPRs, FPRs, SPECs, thresholds
 
 
 if __name__ == '__main__':

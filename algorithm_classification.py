@@ -5,6 +5,7 @@ import re
 from nltk.stem import LancasterStemmer
 
 ARTICLE_BLACKLIST = 11000
+THRESHOLD = 0.17735435435435434
 
 
 def text_lemmatiser(text: str = '', dict_words=None) -> [list]:
@@ -139,7 +140,7 @@ def compute_score(wordlist_list: list, dict_weights: dict) -> list:
 
 def matching_articles(score: list, threshold: float) -> list:
     """
-    Classify articles based on score and threshold
+    Classify articles based on score and THRESHOLD
     :param score: list of score one per article
     :param threshold: number beyond which articles are classified as matching
     :return: classification list
@@ -240,9 +241,8 @@ def classification_alg(df: pd.DataFrame) -> pd.DataFrame:
     score_final = list(map(lambda abstract, ti, kw: abstract + 5 * ti + 5 * kw, score_abs, score_ti, score_kw))
     score_final = list(map(lambda s: scaler(0, 1, score_final, s), score_final))
 
-    # Step5 - scaled score > 0.09 --> classify as 1
-    threshold = 0.17735435435435434
-    matching = matching_articles(score_final, threshold)
+    # Step5 - scaled score > THRESHOLD --> classify as 1
+    matching = matching_articles(score_final, THRESHOLD)
     if len(matching) != 0:
         df.loc[:, 'Score'] = score_final
         df.loc[:, 'Match'] = matching

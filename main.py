@@ -20,7 +20,7 @@ def main():
     input_list = ["First search", "Second search", "Third search"]
 
     # list of default text
-    default_list = ['serious game, game', 'children, kids', 'attention disorder, adhd']
+    default_list = ['serious game, game', 'children, kids', '"attention disorder", adhd']
 
     # creating a multiple enter box
     output = multenterbox(text, title, input_list, default_list)
@@ -88,7 +88,7 @@ def main():
         df_classified = pd.concat([df_classified, classification_alg(df_selected.iloc[:, :])], ignore_index=True)
 
     # saving csv file
-    df_classified.to_csv('export_dataframe_match.csv', index=False)
+    df_classified.to_csv('3_Group09_PartI_Database.csv', index=False)
 
 
 if __name__ == '__main__':

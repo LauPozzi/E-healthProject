@@ -8,3 +8,4 @@ ideas.txt
 *.csv#
 !gold_standard.csv
 !validation_dataframe.csv
+!3_Group09_PartI_Database.csv
