@@ -7,9 +7,9 @@ from nltk.stem import LancasterStemmer
 ARTICLE_BLACKLIST = 11000
 
 
-def text_lemmatiser(text: str = '', dict_words=None) -> [list]:
+def text_stemmer(text: str = '', dict_words=None) -> [list]:
     """
-    Perform text lemmatization on a string or a dictionary of words
+    Perform text stemming on a string or a dictionary of words
     :param text: a string containing the text
     :type text: str
     :param dict_words: a dictionary of words (strings)
@@ -20,8 +20,8 @@ def text_lemmatiser(text: str = '', dict_words=None) -> [list]:
     if dict_words is None:
         dict_words = {}
 
-    lemmatised_words = []
-    lemmatised_dict = {}
+    stemmed_words = []
+    stemmed_dict = {}
     lancaster = LancasterStemmer()
 
     if text:
@@ -35,16 +35,16 @@ def text_lemmatiser(text: str = '', dict_words=None) -> [list]:
         # Split the line into words
         words = line.split()
 
-        # words lemmatisation
-        lemmatised_words = list(map(lambda w: lancaster.stem(w), words))
+        # words stemmization
+        stemmed_words = list(map(lambda w: lancaster.stem(w), words))
 
     if dict_words:
-        lemmatised_dict = defaultdict(int)
+        stemmed_dict = defaultdict(int)
         for value in dict_words.items():
             key = lancaster.stem(str(value[0]))
-            lemmatised_dict[key] += value[1]
+            stemmed_dict[key] += value[1]
 
-    return lemmatised_words, lemmatised_dict
+    return stemmed_words, stemmed_dict
 
 
 def count_words(text: str, d: dict = None) -> dict:
@@ -56,7 +56,7 @@ def count_words(text: str, d: dict = None) -> dict:
     """
     if d is None:
         d = {}
-    words, _ = text_lemmatiser(text=text)
+    words, _ = text_stemmer(text=text)
 
     # Iterate over each word in line
     for word in words:
@@ -83,7 +83,7 @@ def filter_dict(wordlist: dict, size_df: int, general_dictionary: dict, string: 
     wordlist = {k: v / size_df for k, v in wordlist.items()}
     dictionary = dict()
 
-    _, general_dictionary = text_lemmatiser(dict_words=general_dictionary)
+    _, general_dictionary = text_stemmer(dict_words=general_dictionary)
 
     for value in wordlist.items():
         if value[1] > 4 * general_dictionary.get(value[0], 0) / ARTICLE_BLACKLIST:
