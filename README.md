@@ -30,7 +30,10 @@ For each article, the functions define and fill-in the fields (title, abstract, 
 Provides all the functions useful for article classification (1-matching and 0-not matching).
 (See description of the algorithm in the report file). 
 
-### validation.py
-
+### evaluation.py
+If executed, this script provides an analysis of the classification algorithm.
+The algorithm is applied both to a validation database (created with a relaxed version of the query of interest) and a test database (created with the actual query of interest).
+Comparing the validation database to the manual classification (used as ground truth), it selects an optimal threshold which will be used for the binary classification of the test database.
+It evaluates the classification on both databases based on AUC, accuracy, specificity, and sensitivity, reporting also many significant plots.
 
 
