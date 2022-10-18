@@ -129,6 +129,28 @@ def get_auc(gold_standard: pd.DataFrame, alg_scoring_val: pd.DataFrame, alg_scor
         ax2.relim([0.0, 1.0])
         plt.show()
 
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+        fig.suptitle('Threshold Graphs')
+        fig.tight_layout(pad=3.0)
+        ax1.plot(thresholds_val, ACCs_val)
+        ax1.plot(thresholds_val, TPRs_val)
+        ax1.plot(thresholds_val, SPECs_val)
+        marker_size = (plt.rcParams['lines.markersize'] ** 2)*4
+        ax1.scatter(thresholds_val[index_val], max(ACCs_val), c='#ff7f0e', marker='X', s=marker_size)
+        ax1.legend(['Accuracy', 'Sensitivity', 'Specificity'])
+        ax1.set(xlabel='Threshold', ylabel='%')
+        ax1.relim([0.0, 1.0])
+        ax1.relim([0.0, 1.0])
+        ax2.plot(thresholds_test, ACCs_test)
+        ax2.plot(thresholds_test, TPRs_test)
+        ax2.plot(thresholds_test, SPECs_test)
+        ax2.scatter(thresholds_test[index_test], max(ACCs_test), c='#ff7f0e', marker='X', s=marker_size)
+        ax2.legend(['Accuracy', 'Sensitivity', 'Specificity'])
+        ax2.set(xlabel='Threshold', ylabel='%')
+        ax2.relim([0.0, 1.0])
+        ax2.relim([0.0, 1.0])
+        plt.show()
+
 
 if __name__ == '__main__':
     gold_std = pd.read_csv("gold_standard.csv")
