@@ -5,7 +5,7 @@ from sklearn.metrics import confusion_matrix, auc
 import matplotlib.pyplot as plt
 
 
-def get_auc(gold_standard: pd.DataFrame, alg_scoring: pd.DataFrame, graph: bool = True):
+def get_auc(gold_standard: pd.DataFrame, alg_scoring: pd.DataFrame, graph=True):
     if not gold_standard.shape[0] == alg_scoring.shape[0]:
         raise Exception("Dataframes are not of the same length. Check your inputs")
 
@@ -36,10 +36,11 @@ def get_auc(gold_standard: pd.DataFrame, alg_scoring: pd.DataFrame, graph: bool 
     if graph:
         plt.plot(FPRs, TPRs)
         random_evaluator = np.linspace(0, 1, 100)
-        # plt.plot(random_evaluator, random_evaluator)
+        plt.plot(random_evaluator, random_evaluator)
         plt.xlabel('False Positive Rate')
         plt.ylabel('True Positive Rate')
         plt.title('ROC Curve')
+        plt.show()
 
 
 if __name__ == '__main__':
