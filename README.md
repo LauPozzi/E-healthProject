@@ -1,9 +1,14 @@
 # E-healthProject - part 1 - Group09
 
-## Setup 
-In requirements.txt there are all the python modules used, and all the 
-environment settings (other than default) necessary to run the code. 
+## Setup
 * Open a command prompt and execute:
+    ```console
+    conda create -n Group09_PartI_Env python=3.10
+    conda activate Group09_PartI_Env
+    ```
+
+Now it is necessary to clone the repository and install all the dependencies listed in _requirements.txt_. To do so: 
+* In the command prompt and execute:
     ```console
     git clone https://github.com/LauPozzi/E-healthProject.git
     cd E-healthProject
