@@ -8,18 +8,18 @@ import seaborn as sn
 
 
 def join_dataframes(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
-    '''
+    """
     Merge two dataframes with an inner join on the attributes "Article Title" and "Topic of interest"
     :param df1: pandas dataframe
     :param df2: pandas dataframe
     :return: merged dataframe
-    '''
+    """
     merged_dataframe = pd.merge(df1, df2, on=['Article Title', 'Topic of interest'], how='inner')
     return merged_dataframe
 
 
 def get_auc(gold_standard: pd.DataFrame, alg_scoring_val: pd.DataFrame, alg_scoring_test: pd.DataFrame, graph=True):
-    '''
+    """
     The function compares classification on validation DB and test DB with classification from gold standard.
     It selects the optimal threshold for validation DB and for test DB.
     It also reports classification score on the test DB using the validation optimal threshold.
@@ -28,7 +28,7 @@ def get_auc(gold_standard: pd.DataFrame, alg_scoring_val: pd.DataFrame, alg_scor
     :param alg_scoring_test: TEST database
     :param graph: if True, it plots ROC curves, Threshold graphs, and Confusion Matrices
     :return:
-    '''
+    """
     # check inputs
     if not gold_standard.shape[0] == alg_scoring_val.shape[0]:
         raise Exception("Dataframes are not of the same length. Check your inputs")
