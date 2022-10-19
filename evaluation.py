@@ -191,8 +191,8 @@ def get_auc(gold_standard: pd.DataFrame, alg_scoring_val: pd.DataFrame, alg_scor
 
 
 if __name__ == '__main__':
-    gold_std = pd.read_csv("gold_standard.csv")
-    alg_scores_val = pd.read_csv("validation_dataframe.csv")
-    alg_scores_test = pd.read_csv("3_Group09_PartI_Database.csv")
+    gold_std = pd.read_csv("evaluation_data/gold_standard.csv")
+    alg_scores_val = pd.read_csv("evaluation_data/validation_dataframe.csv")
+    alg_scores_test = pd.read_csv("evaluation_data/3_Group09_PartI_Database.csv")
 
     get_auc(gold_std, alg_scores_val, alg_scores_test)

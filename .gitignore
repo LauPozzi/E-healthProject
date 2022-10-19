@@ -1,10 +1,9 @@
 .idea/
-
 venv/
 __pycache__/
 *.csv
 ideas.txt
 *.csv#
-!gold_standard.csv
-!validation_dataframe.csv
-!3_Group09_PartI_Database.csv
+!evaluation_data/gold_standard.csv
+!evaluation_data/validation_dataframe.csv
+!evaluation_data/3_Group09_PartI_Database.csv
